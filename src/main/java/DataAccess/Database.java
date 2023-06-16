@@ -1,13 +1,19 @@
 package DataAccess;
 
 
+// From library
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class Database {
+public class Database { // Class Opening
+
+
+
+    // Variable Declarations
     private Connection conn;
+
 
     // Whenever we want to make a change to our database we will have to open a connection and use
     // Statements created by that connection to initiate transactions
@@ -64,7 +70,11 @@ public class Database {
     }
 
 
-    /*
+} // Class Closing
+
+
+
+/*
     public void clear() throws DataAccessException {
         try (Statement stmt = conn.createStatement()){
             String sql = "DELETE FROM event";
@@ -77,9 +87,6 @@ public class Database {
             throw new DataAccessException("SQL Error encountered while clearing tables");
         }
     }
-    *
+
      */
-
-
-}
 

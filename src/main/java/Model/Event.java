@@ -2,70 +2,32 @@ package Model;
 
 import java.util.Objects;
 
-/**
- * This model object represents the various life events of the user, which includes birth, marriage, death, and additional events.
+/*
+ * FYI
+ * In Java, every class is implicitly a subclass of the "Object" class
+ * The Object class is the root of the class hierarchy in Java,and serves as the base class for all other classes
+ * This means that every class inherits the methods and fields defined in the Object class
+ * e.g., public class Event extends Object.
+ * Object class include toString(), equals(), hashCode()
  */
-public class Event extends Object{
+public class Event {
 
-    // variable declaration
 
-    /**
-     * Unique identifier for this event
-     */
+
+    // Variable Declarations
     private String eventID;
-
-    /**
-     * Username of user to which this event belongs
-     */
     private String associatedUsername;
-
-    /**
-     * ID of person to which this event belongs
-     */
     private String personID;
-
-    /**
-     * Latitude of event’s location
-     */
     private Float latitude;
-
-    /**
-     * Longitude of event’s location
-     */
     private Float longitude;
-
-    /**
-     * Country in which event occurred
-     */
     private String country;
-
-    /**
-     * City in which event occurred
-     */
     private String city;
-
-    /**
-     * Type of event
-     */
     private String eventType;
-
-    /**
-     * Year in which event occurred
-     */
     private Integer year;
 
-    /**
-     * Constructor that initializes event model objects
-     * @param eventID - Unique identifier for this event
-     * @param username - Username of user to which this event belongs
-     * @param personID - ID of person to which this event belongs
-     * @param latitude - Latitude of event’s location
-     * @param longitude - Longitude of event’s location
-     * @param country - Country in which event occurred
-     * @param city - City in which event occurred
-     * @param eventType - Type of event
-     * @param year - Year in which event occurred
-     */
+
+
+    // Constructor
     public Event(String eventID, String username, String personID, Float latitude, Float longitude,
                  String country, String city, String eventType, Integer year) {
         this.eventID = eventID;
@@ -79,8 +41,9 @@ public class Event extends Object{
         this.year = year;
     }
 
-    // Getters and Setters
 
+
+    // Getters and Setters
     public String getEventID() {
         return eventID;
     }
@@ -153,16 +116,34 @@ public class Event extends Object{
         this.year = year;
     }
 
-    /**
-     * Method that compares if the two events are equal
-     * @param o - Event object
-     * @return true or false - boolean that indicates if they are equal
-     */
+
+
+    // Override method - equals
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Event event = (Event) o;
-        return Objects.equals(eventID, event.eventID) && Objects.equals(associatedUsername, event.associatedUsername) && Objects.equals(personID, event.personID) && Objects.equals(latitude, event.latitude) && Objects.equals(longitude, event.longitude) && Objects.equals(country, event.country) && Objects.equals(city, event.city) && Objects.equals(eventType, event.eventType) && Objects.equals(year, event.year);
+
+        // checks if the objects being compared are the same instance
+        if (this == o) { // 'this' refers to the current instance of the object, which is the object on which the 'equals()' method is being called
+            return true;
+        }
+
+        // checks if the parameter object is null or if it belongs to a different class than the current object
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        // casting (assuming the current object is also of type 'Event')
+        Event event = (Event) o; // what is casting in Java (Primitive Casting vs Object Casting <UpCasting,DownCasting>
+
+        // Compares the individual fields of the two 'Event' objects using method from util.Objects
+        return Objects.equals(eventID, event.eventID) &&
+                Objects.equals(associatedUsername, event.associatedUsername) &&
+                Objects.equals(personID, event.personID) &&
+                Objects.equals(latitude, event.latitude) &&
+                Objects.equals(longitude, event.longitude) &&
+                Objects.equals(country, event.country) &&
+                Objects.equals(city, event.city) &&
+                Objects.equals(eventType, event.eventType) &&
+                Objects.equals(year, event.year);
     }
 }

@@ -5,3 +5,7 @@ public class DataAccessException extends Exception {
         super(message);
     }
 }
+
+/*
+ * The SQLException class provides information on a database access error
+ */

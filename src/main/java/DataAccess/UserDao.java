@@ -1,37 +1,37 @@
 package DataAccess;
 
-import java.sql.*;
-
-import Model.Event;
+// From other package
 import Model.User;
 
-/**
- * This class provide operations to the User database
- */
-public class UserDao {
 
-    /**
-     * A variable that intended to store a connection object that will be used for database operations within the class
-     */
+// From library
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+
+public class UserDao { // Class Opening
+
+
+
+    // Variable Declarations
     private final Connection conn;
 
-    /**
-     * A constructor that initializes the connection object
-     * @param conn
-     */
+    // Constructor
     public UserDao(Connection conn) {
         this.conn = conn;
     }
 
+
+
+    // Getter
     public Connection getConn() {
         return conn;
     }
 
-    /**
-     * A method used to create a new user in the user database
-     * @param user - new user
-     * @throws DataAccessException
-     */
+
+
+    // Method - insert a user into database
     public void insert(User user) throws DataAccessException {
         String sql = "INSERT INTO User (username, password, email, firstName, lastName, gender, personID) VALUES(?,?,?,?,?,?,?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -50,12 +50,9 @@ public class UserDao {
         }
     }
 
-    /**
-     * A method used to return the user object from given username
-     * @param username - given username
-     * @return it should return an user object
-     * @throws DataAccessException
-     */
+
+
+    // Method - get user by username
     public User getUser(String username) throws DataAccessException {
         User user;
         ResultSet rs;
@@ -79,15 +76,7 @@ public class UserDao {
 
 
 
-
-
-
-
-
-    /**
-     * A method used to delete all records from the User database
-     * @throws DataAccessException
-     */
+    // Method - clear everything from the user table
     public void clear() throws DataAccessException {
         String sql = "DELETE FROM User";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -98,4 +87,5 @@ public class UserDao {
         }
     }
 
-}
+
+} // Class Closing

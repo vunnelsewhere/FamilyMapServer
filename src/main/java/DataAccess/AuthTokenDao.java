@@ -1,35 +1,38 @@
 package DataAccess;
 
-import java.sql.*;
-
+// From other package
 import Model.AuthToken;
 
-/**
- * This class provide operations to the AuthToken database
- */
-public class AuthTokenDao {
-    /**
-     * A variable that intended to store a connection object that will be used for database operations within the class
-     */
+// From library
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+
+public class AuthTokenDao { // Class Opening
+
+
+
+    // Variable Declarations
     private final Connection conn;
 
-    /**
-     * A constructor that initializes the connection object
-     * @param conn
-     */
+
+
+    // Constructor
     public AuthTokenDao(Connection conn) {
         this.conn = conn;
     }
 
+
+
+    // Getter
     public Connection getConn() {
         return conn;
     }
 
-    /**
-     * A method used to create new AuthToken in the database
-     * @param authToken
-     * @throws DataAccessException
-     */
+
+
+   // Method - insert an authtoken into database
     public void insertAuthToken(AuthToken authToken) throws DataAccessException {
         String sql = "INSERT INTO AuthToken (authtoken, username) VALUES(?,?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -44,11 +47,9 @@ public class AuthTokenDao {
 
     }
 
-    /**
-     * A method used to return an authtoken object with associated user from the given authtoken string
-     * @param authtoken
-     * @return
-     */
+
+
+    // Method - get (find) authtoken by the specified authtoken sting
     public AuthToken getAuthToken(String authtoken) throws DataAccessException { // Unhandled exception: DataAccess.DataAccessException
         AuthToken authToken;
         ResultSet rs;
@@ -69,10 +70,8 @@ public class AuthTokenDao {
     }
 
 
-    /**
-     * A method used to delete all records from the AuthToken database
-     * @throws DataAccessException
-     */
+
+    // Method - clear everything from the authtoken table
     public void clear() throws DataAccessException {
         String sql = "DELETE FROM AuthToken";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -82,4 +81,6 @@ public class AuthTokenDao {
             throw new DataAccessException("Error encountered while clearing the authToken table");
         }
     }
-}
+
+
+} // Class Closing

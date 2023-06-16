@@ -2,63 +2,23 @@ package Model;
 
 import java.util.Objects;
 
-/**
- * This model object represents everyone in that User's family tree, and there will also be a person object generated for the User themselves
- */
 public class Person {
 
-    // variable declaration
-    /**
-     * Unique identifier for this person
-     */
+
+
+    // Variable Declarations
     private String personID;
-
-    /**
-     * Username of user to which this person belongs
-     */
     private String associatedUsername;
-
-    /**
-     * Person’s first name
-     */
     private String firstName;
-
-    /**
-     * Person’s last name
-     */
     private String lastName;
-
-    /**
-     * Person’s gender
-     */
     private String gender;
-
-    /**
-     * Person ID of person’s father
-     */
     private String fatherID;
-
-    /**
-     * Person ID of person’s mother
-     */
     private String motherID;
-
-    /**
-     * Person ID of person’s spouse
-     */
     private String spouseID;
 
-    /**
-     * Constructor that initializes person model objects
-     * @param personID - Unique identifier for this person
-     * @param associatedUsername - Username of user to which this person belongs
-     * @param firstName - Person’s first name
-     * @param lastName - Person’s last name
-     * @param gender - Person’s gender
-     * @param fatherID - Person ID of person’s father
-     * @param motherID - Person ID of person’s mother
-     * @param spouseID - Person ID of person’s spouse
-     */
+
+
+    // Constructor
     public Person(String personID, String associatedUsername, String firstName, String lastName, String gender, String fatherID, String motherID, String spouseID) {
         this.personID = personID;
         this.associatedUsername = associatedUsername;
@@ -70,8 +30,9 @@ public class Person {
         this.spouseID = spouseID;
     }
 
-    // Getters and Setters
 
+
+    // Getters and Setters
     public String getPersonID() {
         return personID;
     }
@@ -136,15 +97,21 @@ public class Person {
         this.spouseID = spouseID;
     }
 
-    /**
-     * Method that compares if the two persons are equal
-     * @param o - User object
-     * @return true or false - boolean that indicates if they are equal
-     */
+
+
+    // Override method - equals
+    @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         Person person = (Person)o;
-        return Objects.equals(personID, person.personID) && Objects.equals(associatedUsername, person.associatedUsername) && Objects.equals(firstName, person.firstName) && Objects.equals(lastName, person.lastName) && Objects.equals(gender, person.gender) && Objects.equals(fatherID, person.fatherID) && Objects.equals(motherID, person.motherID) && Objects.equals(spouseID, person.spouseID);
+        return Objects.equals(personID, person.personID) &&
+                Objects.equals(associatedUsername, person.associatedUsername) &&
+                Objects.equals(firstName, person.firstName) &&
+                Objects.equals(lastName, person.lastName) &&
+                Objects.equals(gender, person.gender) &&
+                Objects.equals(fatherID, person.fatherID) &&
+                Objects.equals(motherID, person.motherID) &&
+                Objects.equals(spouseID, person.spouseID);
     }
 }

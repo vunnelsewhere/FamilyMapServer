@@ -2,58 +2,22 @@ package Model;
 
 import java.util.Objects;
 
-/**
- * This model object represents a user registered with the server, which has a username, password, and email.
- */
-public class User extends Object {
+public class User {
 
-    // variable declaration
 
-    /**
-     * Unique username for user
-     */
+
+    // Variable Declarations
     private String username;
-
-    /**
-     * User’s password
-     */
     private String password;
-
-    /**
-     * User’s email address
-     */
     private String email;
-
-    /**
-     * User's first name
-     */
     private String firstName;
-
-    /**
-     * User's last name
-     */
     private String lastName;
-
-    /**
-     * User's gender
-     */
     private String gender;
-
-    /**
-     * Unique Person ID assigned to this user’s generated Person
-     */
     private String personID;
 
-    /**
-     * Constructor that initializes user model objects
-     * @param username - Unique username for user
-     * @param password - User’s password
-     * @param email - User’s email address
-     * @param firstName - User’s first name
-     * @param lastName - User’s last name
-     * @param gender - User’s gender
-     * @param personID - Unique Person ID assigned to this user’s generated Person
-     */
+
+
+    // Constructor
     public User(String username, String password, String email, String firstName, String lastName, String gender, String personID) {
         this.username = username;
         this.password = password;
@@ -64,8 +28,9 @@ public class User extends Object {
         this.personID = personID;
     }
 
-    // Getters and Setters
 
+
+    // Getters and Setters
     public String getUsername() {
         return username;
     }
@@ -122,15 +87,20 @@ public class User extends Object {
         this.personID = personID;
     }
 
-    /**
-     * Method that compares if the two users are equal
-     * @param o - User object
-     * @return true or false - boolean that indicates if they are equal
-     */
+
+
+    // Override method - equals
+    @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         User user = (User)o;
-        return Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(gender, user.gender) && Objects.equals(personID, user.personID);
+        return Objects.equals(username, user.username) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(firstName, user.firstName) &&
+                Objects.equals(lastName, user.lastName) &&
+                Objects.equals(gender, user.gender) &&
+                Objects.equals(personID, user.personID);
     }
 }

@@ -1,36 +1,43 @@
 package DataAccess;
 
-import java.sql.*;
-
+// From other package
 import Model.Person;
 
-import java.util.*; // use arraylist to store the list of person
-/**
- * This class provide operations to the Event database
- */
-public class PersonDao {
-    /**
-     * A variable that intended to store a connection object that will be used for database operations within the class
-     */
+// From library
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+
+// From data structure
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class PersonDao { // Class Opening
+
+
+
+    // Variable Declarations
     private final Connection conn;
 
-    /**
-     * A constructor that initializes the connection object
-     * @param conn
-     */
+
+
+    // Constructor
     public PersonDao(Connection conn) {
         this.conn = conn;
     }
 
+
+
+    // Getter
     public Connection getConn() {
         return conn;
     }
 
-    /**
-     * A method used to create a new person in the person database
-     * @param person - new person
-     * @throws DataAccessException
-     */
+
+
+    // Method - insert a person into database
     public void insert(Person person) throws DataAccessException{
         String sql = "INSERT INTO Person (personID, associatedUsername, firstName, lastName, gender, fatherID, motherID, spouseID) VALUES(?,?,?,?,?,?,?,?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -46,17 +53,13 @@ public class PersonDao {
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new DataAccessException("Error encountered while inserting a user into the database");
+            throw new DataAccessException("Error encountered while inserting a person into the database");
         }
     }
 
 
-    /**
-     * A method used to return the person object from given personID
-     * @param personID - given username
-     * @return it should return a person object
-     * @throws DataAccessException
-     */
+
+    // Method - get person by an unique personID
     public Person getPerson(String personID) throws DataAccessException {
         Person person;
         ResultSet rs;
@@ -78,6 +81,9 @@ public class PersonDao {
         }
     }
 
+
+
+    // Method - get a list of person by the associatedUsername
     public ArrayList<Person> getPersonList(String associatedUsername) throws DataAccessException {
         ArrayList<Person> allPerson = new ArrayList<>();
         Person person;
@@ -107,6 +113,9 @@ public class PersonDao {
         return null;
     }
 
+
+
+    // Method - Clear persons from a specified username
     public void clearAssoPersons(String associatedUsername) throws DataAccessException {
         String sql = "DELETE FROM Person WHERE associatedUsername = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -118,10 +127,9 @@ public class PersonDao {
         }
     }
 
-    /**
-     * A method used to delete all records from the Person database
-     * @throws DataAccessException
-     */
+
+
+    // Method - clear everything from the person table
     public void clear() throws DataAccessException {
         String sql = "DELETE FROM Person";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -131,4 +139,6 @@ public class PersonDao {
             throw new DataAccessException("Error encountered while clearing the event table");
         }
     }
-}
+
+
+} // Class Closing

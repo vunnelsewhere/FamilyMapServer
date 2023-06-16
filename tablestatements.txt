@@ -1,3 +1,9 @@
+/*
+ * In SQL, the "drop table if exists" statement is used to remove a table from a database if it exists
+ * It allows you to delete a table without causing an error if the table does not exist
+ */
+
+
 drop table if exists User;
 drop table if exists Person;
 drop table if exists Event;
