@@ -1,6 +1,7 @@
 package DataAccess;
 
 // From other package
+import Model.Event;
 import Model.Person;
 
 // From library
@@ -54,6 +55,13 @@ public class PersonDao { // Class Opening
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DataAccessException("Error encountered while inserting a person into the database");
+        }
+    }
+
+    // Method - insert a list of events into database
+    public void insertPersons(List<Person> persons) throws DataAccessException {
+        for (Person person : persons) {
+            insert(person);
         }
     }
 

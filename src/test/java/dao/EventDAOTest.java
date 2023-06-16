@@ -26,7 +26,7 @@ public class EventDAOTest { // Class Opening
 
 
 
-    // Variable Declaration
+    // Variable Declarations
     private Database db;
     private Event bestEvent;
     private EventDao eDao;
@@ -191,7 +191,7 @@ public class EventDAOTest { // Class Opening
     public void cleanByNamePass() throws DataAccessException {
         eDao.insertEvents(eventList);
         eDao.clearAssoEvents("Gale");
-        Event event1 = eDao.getEvent(bestEvent.getEventID()); // event of Gale
+        Event event1 = eDao.getEvent(bestEvent.getEventID()); // eventID of Gale
         assertNull(event1);
         Event event2 = eDao.getEvent("Conference_246D");
         assertNotNull(event2); // should still exist bcuz this event does not belong to Gale

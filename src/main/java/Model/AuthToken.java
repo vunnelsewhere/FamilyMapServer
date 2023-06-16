@@ -44,8 +44,8 @@ public class AuthToken {
     public boolean equals(Object o) {
         if (this == o) {return true;}
         if (o == null || getClass() != o.getClass()) {return false;}
-        AuthToken authtoken = (AuthToken) o;
-        return Objects.equals(authtoken,authtoken.authtoken) &&
-                Objects.equals(username,authtoken.username);
+        AuthToken authToken = (AuthToken) o;
+        return Objects.equals(authtoken,authToken.authtoken) &&
+                Objects.equals(username,authToken.username);
     }
 }
