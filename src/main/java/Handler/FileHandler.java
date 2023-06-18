@@ -19,7 +19,7 @@ import java.nio.file.Files;
  * e.g., access the index.html file
  * Ignore everything but GET requests, Get the request URL from the exchange
  */
-public class FileHandler extends Handler{ // Class Opening
+public class FileHandler extends Handler { // Class Opening
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 

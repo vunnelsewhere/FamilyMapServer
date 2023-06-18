@@ -5,28 +5,21 @@ package Result;
  */
 public class ClearResult {
 
-    // Variable Declaration
 
-    /**
-     * Message if the clear succeeded or not
-     */
+
+    // Variable Declarations
     private String message;
-
-    /**
-     * Result if the call was successful or not
-     */
     private boolean success;
 
 
-    /**
-     * A constructor
-     * @param message - Message if the clear succeeded or not
-     * @param success - Result if the call was successful or not
-     */
+
+    // Constructor
     public ClearResult(String message, boolean success) {
         this.message = message;
         this.success = success;
     }
+
+
 
     // Getter and Setter
 
@@ -45,4 +38,6 @@ public class ClearResult {
     public void setSuccess(boolean success) {
         this.success = success;
     }
+
+
 }

@@ -12,6 +12,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+// From Java serialization/deserialization library
+import com.google.gson.*;
+
 /*
  * Base class of all Handlers
  */
@@ -19,7 +22,8 @@ import java.io.OutputStreamWriter;
 public class Handler implements HttpHandler { // Class Opening
 
     // Variable Declarations
-    boolean success = false;
+    protected boolean success = false;
+    protected Gson gson = new Gson();
 
     // Each handler will implement this method differently
     @Override
@@ -30,7 +34,7 @@ public class Handler implements HttpHandler { // Class Opening
    /*
     * The readString method shows how to read a String from an InputStream.
     */
-    private String readString(InputStream is) throws IOException {
+    protected String readString(InputStream is) throws IOException {
         StringBuilder sb = new StringBuilder();
         InputStreamReader sr = new InputStreamReader(is);
         char[] buf = new char[1024];
@@ -44,7 +48,7 @@ public class Handler implements HttpHandler { // Class Opening
     /*
      * The writeString method shows how to write a String to an OutputStream.
      */
-    private void writeString(String str, OutputStream os) throws IOException {
+    protected void writeString(String str, OutputStream os) throws IOException {
         OutputStreamWriter sw = new OutputStreamWriter(os);
         sw.write(str);
         sw.flush();
@@ -62,4 +66,8 @@ public class Handler implements HttpHandler { // Class Opening
 /*
  * IOException is the base class for exceptions throw while accessing information using streams, files, and directories
  * they occur whenever an input or output operation is failed or interpreted
+ */
+
+/*
+ * protected: an access modifier used for attributes, methods, and constructors, making them accessible in the same package and subclasses
  */

@@ -70,23 +70,33 @@ public class Database { // Class Opening
     }
 
 
-} // Class Closing
 
 
-
-/*
+    // Method to clear all tables from database
     public void clear() throws DataAccessException {
+
         try (Statement stmt = conn.createStatement()){
-            String sql = "DELETE FROM event";
+            String sql = "DELETE FROM User";
             stmt.executeUpdate(sql);
-            sql = "DELETE FROM person";
+            sql = "DELETE FROM Person";
             stmt.executeUpdate(sql);
-            sql = "DELETE FROM User";
+            sql = "DELETE FROM Event";
             stmt.executeUpdate(sql);
+            sql = "DELETE FROM AuthToken";
+            stmt.executeUpdate(sql);
+
         } catch (SQLException e) {
             throw new DataAccessException("SQL Error encountered while clearing tables");
         }
     }
 
-     */
+
+} // Class Closing
+
+
+
+
+
+
+
 

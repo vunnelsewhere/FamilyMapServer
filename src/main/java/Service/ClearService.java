@@ -1,5 +1,6 @@
 package Service;
 
+// From other package
 import DataAccess.*;
 import Result.ClearResult;
 
@@ -7,58 +8,54 @@ import Result.ClearResult;
 /**
  * This service class implements the function of deleting all data from the database, including user, authtoken, person, and event data
  */
-public class ClearService {
+public class ClearService { // Class Opening
 
-    /**
-     * This is an empty default constructor
-     */
+
+
+    // Constructor
     public ClearService() {
     }
 
-    /**
-     * This method is used to clear the data in all the tables in the database (4 of them)
-     * @return a ClearResult object
-     */
-    public ClearResult clear() {
+
+
+    // Main Method
+    public ClearResult clear() { // Beginning of clear
         System.out.println("In clear Service");
+
+        // Initial Variable Declarations
         Database db = new Database();
+        ClearResult result;
 
-        ClearResult result = null;
+        try { // Beginning of try
 
-        try {
             // Open database connection
-            db.openConnection();
+            db.getConnection();
 
-            // Use DAOs to do requested operation
-            UserDao uDao = new UserDao(db.getConnection());
-            PersonDao pDao = new PersonDao(db.getConnection());
-            EventDao eDao = new EventDao(db.getConnection());
-            AuthTokenDao aDao = new AuthTokenDao(db.getConnection());
-
-            // call dao clear method to interact with database
-            uDao.clear();
-            pDao.clear();
-            eDao.clear();
-            aDao.clear();
+            // Use DAO (package) to do requested operation
+            db.clear();
 
             // Close database connection, COMMIT transaction
             db.closeConnection(true);
 
-            // Create and return SUCCESS Result object
+            // Create SUCCESS Result object
             result = new ClearResult("Clear succeeded",true);
-            return result;
 
-        }
-        catch (DataAccessException e) {
-            e.printStackTrace();
+        } // End of try
+        catch (DataAccessException ex) {
+            ex.printStackTrace();
 
-            //Close database connection, ROLLBACK transaction
+            // Close database connection, ROLLBACK transaction
             db.closeConnection(false);
 
-            // Create and return FAILURE Result object
-            result = new ClearResult("Error: Internal Server Error",false);
-            return result;
+            // Create FAILURE Result object
+            result = new ClearResult("Error: Clear failed", false);
         }
 
-    }
-}
+        // Return Result object
+        return result;
+
+    } // End of clear
+
+
+
+} // Class Closing

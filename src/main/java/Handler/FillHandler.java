@@ -1,29 +1,30 @@
 package Handler;
 
+// From Java HTTP Server
+import com.sun.net.httpserver.*;
+
+// From Java serialization/deserialization library
+import com.google.gson.*;
+
+// From other Java Library
 import java.io.*;
 import java.net.*;
 
+// From other packages
 import DataAccess.DataAccessException;
-import Result.ClearResult;
-import Service.ClearService;
-import com.sun.net.httpserver.*;
-
-
 import Result.FillResult;
 import Request.FillRequest;
 import Service.FillService;
-import com.google.gson.*;
 
-public class FillHandler implements HttpHandler { // HTTP Method: POST
+
+public class FillHandler extends Handler {
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) throws IOException { // HTTP Method: POST
+
         System.out.println("In fill Handler");
-        boolean success = false;
 
-        try {
-
-            // Determine the HTTP request type (POST).
+        try { // Beginning of try
             if (exchange.getRequestMethod().toLowerCase().equals("post")) {
 
                 // get URl
@@ -74,9 +75,5 @@ public class FillHandler implements HttpHandler { // HTTP Method: POST
         }
     }
 
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        sw.write(str);
-        sw.flush();
-    }
+
 }

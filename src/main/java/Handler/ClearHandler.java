@@ -1,64 +1,73 @@
 package Handler;
 
+// From Java HTTP Server
+import com.sun.net.httpserver.*;
+
+// From Java serialization/deserialization library
+import com.google.gson.*;
+
+// From other Java Library
 import java.io.*;
 import java.net.*;
 
+// From other packages
 import DataAccess.DataAccessException;
-import com.sun.net.httpserver.*;
-
-
 import Result.ClearResult;
 import Service.ClearService;
-import com.google.gson.*;
 
-public class ClearHandler implements HttpHandler { // HTTP Method: POST
+
+public class ClearHandler extends Handler { // Class Opening
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) throws IOException { // HTTP Method: POST
 
         System.out.println("In clear Handler");
-        boolean success = false;
+        try { // Beginning of try
+            // Request method matches with 'post'
+            if(exchange.getRequestMethod().toLowerCase().equals("post")) {
 
-        try {
-
-            // Determine the HTTP request type (POST).
-            if (exchange.getRequestMethod().toLowerCase().equals("post")) {
-
-
+                // Do the Service
                 ClearService service = new ClearService();
                 ClearResult result = service.clear();
 
-                // Send HTTP Response to client
-                if (result.isSuccess()) {
-                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-                }
 
-                // Serialize
-                OutputStream resBody = exchange.getResponseBody();
-                Gson gson = new Gson();
+                // Send response back (including the code)
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);
+
+                // Get response body output stream
+                OutputStream respBody = exchange.getResponseBody();
                 String resData = gson.toJson(result);
-                writeString(resData, resBody);
-                resBody.close();
-
+                // Write the JSON string to the output stream
+                writeString(resData,respBody);
+                // Close the output stream. THis is how Java knows we are done
+                respBody.close(); // tell Java that the response is finished
                 success = true;
 
             }
-            if (!success) {
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
-                exchange.getResponseBody().close(); // don't send response
+            // request method not post
+            else {
+               exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST,0); // 400 status code
+                exchange.getResponseBody().close(); //not gonna send back any data
             }
-        } catch (IOException e) {
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_SERVER_ERROR, 0);
+
+            if(!success) { // check for failure
+                // The HTTP request was invalid somehow, so we return a "bad request"
+                // status code to the client.
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
+                exchange.getResponseBody().close();
+
+            }
+
+
+        } // End of try
+        catch (IOException e) {
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_SERVER_ERROR,0);
             exchange.getResponseBody().close();
-
             e.printStackTrace();
+
         }
+
     }
 
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        sw.write(str);
-        sw.flush();
-    }
-}
+} // Class Closing
 
