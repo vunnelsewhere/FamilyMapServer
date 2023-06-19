@@ -19,7 +19,7 @@ public class ClearService { // Class Opening
 
 
     // Main Method
-    public ClearResult clear() { // Beginning of clear
+    public ClearResult clear() throws DataAccessException { // Beginning of clear
         System.out.println("In clear Service");
 
         // Initial Variable Declarations

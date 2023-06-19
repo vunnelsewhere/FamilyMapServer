@@ -1,92 +1,118 @@
 package Service;
 
+
+// From other package
+import Model.*;
 import DataAccess.*;
 import Result.ClearResult;
 import Result.LoadResult;
 import Request.LoadRequest;
 
+//
+import java.sql.Connection;
+
+// From Data Structure
 import java.util.ArrayList;
 
-import Model.*;
+
 /**
  * This service class implements the function of clearing all data and then loading the user, person, and event data from the request body into the database
  */
 
-public class LoadService {
-    /**
-     * This is an empty default constructor
-     */
+public class LoadService { // Class Opening
+
+
+
+    // Constructor
     public LoadService() {
     }
 
 
-    /**
-     * This method is used to clear all data from database and load user,person,event data from the request body
-     * @param request - Load request data
-     * @return load response object
-     * @throws DataAccessException
-     */
-    public LoadResult load(LoadRequest request) throws DataAccessException {
+   // Main Method
+    public LoadResult load(LoadRequest request) throws DataAccessException { // Beginning of load
+        System.out.println("In load service before clearing");
 
-        // Clears all data from the database (just like the /clear API)
-        ClearService service = new ClearService();
-        ClearResult clearResult = service.clear();
-
+        // Initial Variable Declarations
         Database db = new Database();
+        ClearResult clearResult;
+        LoadResult result;
 
-        LoadResult result = null;
+        // clear all data first
+        ClearService clearService = new ClearService();
+        clearResult = clearService.clear();
 
+
+
+        // If successfully cleared database
         if(clearResult.isSuccess()) {
             try {
                 System.out.println("Previously cleared database succesfully");
                 System.out.println("In Load Service");
+
                 // Open database connection
-                db.openConnection();
+                Connection conn = db.getConnection();
 
-                // Use DAOs to do requested operation
-                UserDao uDao = new UserDao(db.getConnection());
-                PersonDao pDao = new PersonDao(db.getConnection());
-                EventDao eDao = new EventDao(db.getConnection());
-                AuthTokenDao aDao = new AuthTokenDao(db.getConnection());
+                // Pass connection to DAOs
+                UserDao uDao = new UserDao(conn);
+                PersonDao pDao = new PersonDao(conn);
+                EventDao eDao = new EventDao(conn);
+                AuthTokenDao aDao = new AuthTokenDao(conn);
 
-                // extract data from request body
+                // Extract data from request body
                 ArrayList<User> users = request.getUsers();
                 ArrayList<Person> persons = request.getPersons();
                 ArrayList<Event> events = request.getEvents();
 
-                for (User user : users) {
-                    uDao.insert(user);
+                // Check to see if any of them is null
+                if(users.size()==0 && persons.size()==0 && events.size()==0) {
+                    result = new LoadResult("Error: Empty Request Body",false);
                 }
-                for (Person person : persons) {
-                    pDao.insert(person);
-                }
-                for (Event event : events) {
-                    eDao.insert(event);
+                else {
+
+
+                    // Insert data to each table
+                    for (User user : users) {
+                        uDao.insert(user);
+                    }
+                    for (Person person : persons) {
+                        pDao.insert(person);
+                    }
+                    for (Event event : events) {
+                        eDao.insert(event);
+                    }
+
+                    // Return message
+                    String message = String.format("Successfully added %d users, %d persons, and %d events " +
+                            "to the database.", users.size(), persons.size(), events.size());
+
+                    // Close database connection, COMMIT transaction
+                    db.closeConnection(true);
+
+                    // Create SUCCESS Result object
+                    result = new LoadResult(message, true);
                 }
 
-                String message = String.format("Successfully added %d users, %d persons, and %d events " +
-                        "to the database.", users.size(), persons.size(), events.size());
-                result = new LoadResult(message,true);
-
-                // Close database connection, COMMIT transaction
-                db.closeConnection(true);
-                return result;
-
-            }
-            catch (DataAccessException e) {
-                e.printStackTrace();
+            } // End of try
+            catch (DataAccessException ex) {
+                ex.printStackTrace();
 
                 //Close database connection, ROLLBACK transaction
                 db.closeConnection(false);
 
-                // Create and return FAILURE Result object
-                result = new LoadResult("Error: Internal Server Error",false);
-                return result;
+                // Create FAILURE Result object
+                result = new LoadResult("Error: Load failed",false);
             }
+
+            // Return Result object
+            return result;
         }
+
+        // failed to cleared database previously
         else {
             result = new LoadResult("Error: failed to clear database", false);
             return result;
         }
-    }
-}
+    } // End of load
+
+
+} // Class Closing

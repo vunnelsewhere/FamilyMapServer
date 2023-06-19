@@ -40,7 +40,7 @@ public class ClearServiceTest { // Class Opening
         // Set up the service
         service = new ClearService();
 
-        // Clear instance for all four tables
+        // Create instance for all four tables
         db = new Database();
         user = new User("Venus","123456","venus123@gmail.com","Venus",
                 "Chan","f","23456HJK");

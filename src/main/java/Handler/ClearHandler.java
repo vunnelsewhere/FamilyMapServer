@@ -60,7 +60,7 @@ public class ClearHandler extends Handler { // Class Opening
 
 
         } // End of try
-        catch (IOException e) {
+        catch (IOException  | DataAccessException e) {
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_SERVER_ERROR,0);
             exchange.getResponseBody().close();
             e.printStackTrace();
