@@ -37,7 +37,6 @@ public class ClearServiceTest { // Class Opening
 
     @BeforeEach
     public void setUp() throws DataAccessException {
-        
         // Set up the service
         service = new ClearService();
 
@@ -51,13 +50,11 @@ public class ClearServiceTest { // Class Opening
                 "Thailand","Bangkok","Birth",2007);
         authtoken = new AuthToken("87juy64h","Venus");
 
+        // Pass Connection
+        Connection conn = db.getConnection(); // update: before clearing the database, you need to get connection!!
 
         // Clear database as well so any lingering data doesn't affect the tests
         db.clear();
-
-        // Pass Connection
-        Connection conn = db.getConnection();
-
 
         // Add those data to the DAOs
         UserDao uDao = new UserDao(conn);
