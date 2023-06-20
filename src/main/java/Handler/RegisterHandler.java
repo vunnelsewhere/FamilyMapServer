@@ -1,67 +1,73 @@
 package Handler;
 
+// From Java HTTP Server
+import com.sun.net.httpserver.*;
+
+// From Java serialization/deserialization library
+import com.google.gson.*;
+
+// From other Java Library
 import java.io.*;
 import java.net.*;
 
+// From other packages
 import DataAccess.DataAccessException;
-import com.sun.net.httpserver.*;
-
 import Request.RegisterRequest;
 import Result.RegisterResult;
 import Service.RegisterService;
-import com.google.gson.*;
 
 
-public class RegisterHandler implements HttpHandler {
+public class RegisterHandler extends Handler { // Class Opening
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) throws IOException { // HTTP Method: POST
 
         System.out.println("In Register Handler");
-        boolean success = false;
+        try { // Beginning of try
+            // Request method matches with 'post'
+            if (exchange.getRequestMethod().toLowerCase().equals("post")) {
 
-        try {
-
-            if (exchange.getRequestMethod().toLowerCase().equals("post")) { // HTTP Method: POST
-
-                Headers reqHeaders = exchange.getRequestHeaders();
-                // AuthToken Required: No
-
+                // Get request body info to register
                 InputStream reqBody = exchange.getRequestBody();
                 String reqData = readString(reqBody);
                 System.out.println(reqData);
 
-                // TODO: Claim a route based on the request data
-                Gson gson = new Gson();
-                RegisterRequest r = (RegisterRequest)gson.fromJson(reqData, RegisterRequest.class);
+                RegisterRequest request = (RegisterRequest)gson.fromJson(reqData, RegisterRequest.class);
 
+
+                // Do the Service
                 RegisterService service = new RegisterService();
-                RegisterResult result = service.register(r);
+                RegisterResult result = service.register(request);
 
-                if(result.isSuccess()) {
-                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-                }
 
-                // Serialize
+                // Send response back (including the code)
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+
+
+                // Get response body output stream
                 OutputStream resBody = exchange.getResponseBody();
-                gson = new Gson();
                 String resData = gson.toJson(result);
                 writeString(resData, resBody);
                 resBody.close();
-
                 success = true;
 
-
-
             }
-            if (!success) {
+
+            // request method not post
+            else {
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST,0); // 400 status code
+                exchange.getResponseBody().close(); //not gonna send back any data
+            }
+
+
+            if (!success) { // check for failure
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
-                exchange.getResponseBody().close(); // don't send response
+                exchange.getResponseBody().close();
             }
 
 
-        }
-        catch (DataAccessException e) { // Unhandled exception: DataAccess.DataAccessException
+        } // End of try
+        catch (IOException | DataAccessException e) { // Unhandled exception: DataAccess.DataAccessException
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_SERVER_ERROR, 0);
             exchange.getResponseBody().close();
             e.printStackTrace();
@@ -69,23 +75,8 @@ public class RegisterHandler implements HttpHandler {
 
     }
 
-    private String readString(InputStream is) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        InputStreamReader sr = new InputStreamReader(is);
-        char[] buf = new char[1024];
-        int len;
-        while ((len = sr.read(buf)) > 0) {
-            sb.append(buf, 0, len);
-        }
-        return sb.toString();
-    }
 
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        sw.write(str);
-        sw.flush();
-    }
 
-}
+} // Class Closing
 
 

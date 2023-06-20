@@ -10,16 +10,16 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class GenTreeService {
+public class FamilyTreeService {
     private User user;
     private final PersonDao pDao;
     private final EventDao eDao;
 
     private int personCount = 0;
     private int eventCount = 0;
-    private SeedService sd = new SeedService();
+    private SerializeDataService sd = new SerializeDataService();
 
-    public GenTreeService(User user, PersonDao pDao, EventDao eDao) {
+    public FamilyTreeService(User user, PersonDao pDao, EventDao eDao) {
         this.user = user;
         this.pDao = pDao;
         this.eDao = eDao;
@@ -27,29 +27,77 @@ public class GenTreeService {
 
     public void generate(int generation) {
 
-        // Extract necessary info from the user
+        // Extract Data
         String username = this.user.getUsername();
         String firstName = this.user.getFirstName();
         String lastName = this.user.getLastName();
         String gender = this.user.getGender();
         String personID = this.user.getPersonID();
 
-        // Creates a new person object (DO NOT insert into the database)
+        // Corresponding person object (the root user)
         Person person = new Person(personID, username, firstName, lastName, gender, null, null, null);
 
-
-        // Each user has Person objects that represent everyone in that user's family tree.
-        // These Person objects share an identical associatedUsername and will each have a unique personID.
+        // Generate list of events for the user
         List<Event> events = genEvents(person);
+        int birthYear = 2000;
+
         // set year for the root person (year field not null)
-        events.get(0).setYear(1997);
-        events.get(1).setYear(2027);
-        events.get(2).setYear(2080);
+        events.get(0).setYear(2000);
+        events.get(1).setYear(2025);
+        events.get(2).setYear(2100); // nobody must die at an age older than 120 years old
         genFamily(person, generation, events);
 
         // Each Person object may also have Events associated with them.
         // These Event objects share an identical associatedUsername and will each have a unique eventID.
         // They also have a personID that matches the person they are associated with.
+    }
+
+
+
+   /*
+    * This method is used to generate events for the particular person
+    */
+    public List<Event> genEvents(Person person) {
+
+        List<Event> events = new ArrayList<Event>();
+        Event birth = genBirth(person);
+        Event marriage = genMarriage(person);
+        Event death = genDeath(person);
+        events.add(birth);
+        events.add(marriage);
+        events.add(death);
+
+        return events;
+    }
+
+    public Event genBirth(Person person) {
+        String eventType = "birth";
+        String personID = person.getPersonID();
+        SerializeDataService.Location location = sd.getRandomLocation();
+        Event birth = new Event(UUID.randomUUID().toString(), this.user.getUsername(), personID,
+                location.getLatitude(), location.getLongitude(), location.getCountry(), location.getCity(),
+                eventType, null);
+        return birth;
+    }
+
+    public Event genMarriage(Person person) {
+        String eventType = "marriage";
+        String personID = person.getPersonID();
+        SerializeDataService.Location location = sd.getRandomLocation();
+        Event marriage = new Event(UUID.randomUUID().toString(), this.user.getUsername(), personID,
+                location.getLatitude(), location.getLongitude(), location.getCountry(), location.getCity(),
+                eventType, null);
+        return marriage;
+    }
+
+    public Event genDeath(Person person) {
+        String eventType = "death";
+        String personID = person.getPersonID();
+        SerializeDataService.Location location = sd.getRandomLocation();
+        Event death = new Event(UUID.randomUUID().toString(), this.user.getUsername(), personID,
+                location.getLatitude(), location.getLongitude(), location.getCountry(), location.getCity(),
+                eventType, null);
+        return death;
     }
 
     /**
@@ -61,7 +109,7 @@ public class GenTreeService {
 
         Random rand = new Random();
 
-        // The exit of the recursion
+        // case 1: generation 0 - only generate person and event data for the user
         if (generation == 0) {
             try {
                 pDao.insert(root);
@@ -74,7 +122,9 @@ public class GenTreeService {
             return;
         }
 
-        // generate the mother and father Person objects for the current root person
+        // case 2: any generation > 0
+
+        // Generate name for parents
         String[] motherName = sd.getRandomName("f").split(" ");
         String[] fatherName = sd.getRandomName("m").split(" ");
 
@@ -124,28 +174,6 @@ public class GenTreeService {
         genFamily(father, generation - 1, fatherEvents);
     }
 
-    /**
-     * Generate three basic events for the given person.
-     * @param person: the person the generated events belong to.
-     * @return: the list of newly generated events.
-     */
-    public List<Event> genEvents(Person person) {
-
-        List<Event> events = new ArrayList<Event>();
-
-        String personID = person.getPersonID();
-        String[] eventTypes = {"birth", "marriage", "death"};
-
-        for (String type : eventTypes) {
-            SeedService.Location location = sd.getRandomLocation();
-            Event event = new Event(UUID.randomUUID().toString(), this.user.getUsername(), personID,
-                    location.getLatitude(), location.getLongitude(), location.getCountry(), location.getCity(),
-                    type, null);
-            events.add(event);
-        }
-
-        return events;
-    }
 
     private Integer[] genParentYears(Integer childBirthYear) {
 
@@ -159,13 +187,6 @@ public class GenTreeService {
 
         return parentYears;
     }
-
-    /*
-    public void clearFamily() throws DataAccessException {
-        eDao.clearUserEvents(this.user.getUsername());
-        pDao.clearUserPersons(this.user.getUsername());
-    }
-     */
 
     public int getPersonCount() {
         return personCount;

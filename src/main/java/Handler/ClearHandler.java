@@ -31,7 +31,7 @@ public class ClearHandler extends Handler { // Class Opening
                 ClearResult result = service.clear();
 
 
-                // Send response back (including the code)
+
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);
 
                 // Get response body output stream

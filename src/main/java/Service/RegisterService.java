@@ -1,97 +1,122 @@
-
 package Service;
 
-import DataAccess.DataAccessException;
-import DataAccess.Database;
+// From other package
+import Model.*;
+import DataAccess.*;
+
 import Result.RegisterResult;
 import Request.RegisterRequest;
 
+// From UUID - generate random authtoken
+import java.sql.Connection;
 import java.util.UUID;
-import Model.*;
-import DataAccess.*;
 
 /**
  * This service class implements the function of registering new user account
  */
-public class RegisterService {
-    /**
-     * This is an empty default constructor
-     */
+public class RegisterService { // Class Opening
+
+
+    // Constructor
     public RegisterService() {
     }
 
-    /**
-     * This method is used to create new user account, generate 4 generation of ancestor data for new user, log user in, and return an auth token
-     * @param r Register Request data
-     * @return register response object
-     * @throws DataAccessException
-     */
+
+
+    // Main Method
     public RegisterResult register(RegisterRequest r) throws DataAccessException{
+        System.out.println("In register Service");
+
+        // Initial Variable Declarations
         Database db = new Database();
-        try {
+        RegisterResult result;
+
+
+        // Extract data
+        String username = r.getUsername();
+        String password = r.getPassword();
+        String email = r.getEmail();
+        String firstName = r.getFirstName();
+        String lastName = r.getLastName();
+        String gender = r.getGender();
+
+        try { // Beginning of try
 
             // Open database connection
             db.openConnection();
 
-            // Use DAOs to do requested operation
-            UserDao uDao = new UserDao(db.getConnection());
-            PersonDao pDao = new PersonDao(db.getConnection());
-            EventDao eDao = new EventDao(db.getConnection());
-            AuthTokenDao aDao = new AuthTokenDao(db.getConnection());
+            // Pass Connection to DAOs
+            Connection conn = db.getConnection();
+            UserDao uDao = new UserDao(conn);
+            PersonDao pDao = new PersonDao(conn);
+            EventDao eDao = new EventDao(conn);
+            AuthTokenDao aDao = new AuthTokenDao(conn);
 
-            // Create new user if does not exist in database
-            if(uDao.getUser(r.getUsername()) == null) {
-                //
-                String newPersonID = UUID.randomUUID().toString();
-                String newAuthtoken = UUID.randomUUID().toString();
+
+            // Check if request body has all fields filled
+            if(r.getUsername() == null || r.getEmail() == null || r.getGender() == null ||
+                    r.getPassword() == null || r.getFirstName() == null || r.getLastName() == null) {
+                result = new RegisterResult("Error: Missing fields, try again",false);
+                return result;
+            }
+
+            // Create New User
+            if(uDao.getUser(username) == null) {
+
+                String generatedpersonID = UUID.randomUUID().toString();
 
                 // Create the user from data in request
                 User user = new User(
-                        r.getUsername(),
-                        r.getPassword(),
-                        r.getEmail(),
-                        r.getFirstName(),
-                        r.getLastName(),
-                        r.getGender(),
-                        newPersonID
+                        username,
+                        password,
+                        email,
+                        firstName,
+                        lastName,
+                        gender,
+                        generatedpersonID
                 );
                 uDao.insert(user);
 
 
                 // Generate 4 generations of ancestor data
+                FamilyTreeService tree = new FamilyTreeService(user, pDao, eDao);
+                tree.generate(4);
 
-
-                // logs the user in
 
                 // return an auth token
-                String token = UUID.randomUUID().toString();
-                AuthToken authToken = new AuthToken(token,user.getUsername());
+                String newToken = UUID.randomUUID().toString();
+                AuthToken authToken = new AuthToken(newToken,username);
                 aDao.insertAuthToken(authToken);
+
+                // Create SUCCESS Result object
+                result = new RegisterResult(newToken,username,generatedpersonID,true);
             }
             else {
-                return new RegisterResult("Error: username already exist", false);
+                result =  new RegisterResult("Error: username already exist", false);
 
             }
 
 
             // Close database connection, COMMIT transaction
             db.closeConnection(true);
-            // return new RegisterResult(newAuthtoken,"username", personID,true);
 
-            // Create and return SUCCESS Result object
-        } catch (Exception ex) {
+        } // End of try
+
+        catch (DataAccessException ex) {
             ex.printStackTrace();
 
             // Close database connection, ROLLBACK transaction
             db.closeConnection(false);
 
-            // Create and return FAILURE Result object
-            return new RegisterResult("Error: Server Error", false);
+            // Create FAILURE Result object
+            return new RegisterResult("Error: Register failed", false);
         }
 
+        // Return Result object
+        return result;
 
-        return null;
     }
-}
+
+} // Class Closing
 
 

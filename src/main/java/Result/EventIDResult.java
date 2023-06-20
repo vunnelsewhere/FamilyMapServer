@@ -94,6 +94,11 @@ public class EventIDResult {
         this.message = message;
     }
 
+    public EventIDResult(String message, Boolean success) {
+        this.success = success;
+        this.message = message;
+    }
+
     // Getter and Setter
     public String getAssociatedUsername() {
         return associatedUsername;

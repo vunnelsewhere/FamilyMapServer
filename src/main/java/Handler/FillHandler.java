@@ -13,11 +13,10 @@ import java.net.*;
 // From other packages
 import DataAccess.DataAccessException;
 import Result.FillResult;
-import Request.FillRequest;
 import Service.FillService;
 
 
-public class FillHandler extends Handler {
+public class FillHandler extends Handler { // Class Opening
 
     @Override
     public void handle(HttpExchange exchange) throws IOException { // HTTP Method: POST
@@ -28,52 +27,55 @@ public class FillHandler extends Handler {
             if (exchange.getRequestMethod().toLowerCase().equals("post")) {
 
                 // get URl
-                String [] URL = exchange.getRequestURI().toString().split("/");
+                String[] URL = exchange.getRequestURI().toString().split("/");
                 String username = URL[2]; // index 2, 3rd element
 
                 // generation: default 4
                 int numGeneration = 4;
-                if(URL.length > 3) {
-                    numGeneration = Integer.parseInt(URL[3]);
+
+                // host/fill/susan/3
+                if (URL.length == 4) {
+                    numGeneration = Integer.parseInt(URL[3]); // index 3, 4th element
                 }
 
-                FillRequest request = new FillRequest(username,numGeneration);
+                // Do the Service
                 FillService service = new FillService();
-                FillResult result = service.fill(request);
+                FillResult result = service.fill(username, numGeneration);
 
 
+                // Send response back (including the code)
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 
-                // Send HTTP Response to client
-                if(result.isSuccess()) {
-                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-                }
 
-                // Serialize
+                // Get response body output stream
                 OutputStream resBody = exchange.getResponseBody();
-                Gson gson = new Gson();
                 String resData = gson.toJson(result);
                 writeString(resData, resBody);
                 resBody.close();
-
                 success = true;
 
             }
-            if (!success) {
+            // request method not post
+            else {
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0); // 400 status code
+                exchange.getResponseBody().close(); //not gonna send back any data
+
+            }
+            if (!success) { // check for failure
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
                 exchange.getResponseBody().close(); // don't send response
             }
-        } catch (DataAccessException e) {
+
+        } // End of try
+        catch (IOException | DataAccessException e) {
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_SERVER_ERROR, 0);
             exchange.getResponseBody().close();
-
             e.printStackTrace();
-        } catch (IOException e) {
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_SERVER_ERROR, 0);
-            exchange.getResponseBody().close();
 
-            e.printStackTrace();
         }
+
     }
 
 
-}
+} // Class Closing
+

@@ -1,26 +1,33 @@
 package Handler;
 
+// From Java HTTP Server
+import com.sun.net.httpserver.*;
+
+// From Java serialization/deserialization library
+import com.google.gson.*;
+
+// From other Java Library
 import java.io.*;
 import java.net.*;
 
+// From other packages
 import DataAccess.DataAccessException;
-
-import com.sun.net.httpserver.*;
-
 import Result.PersonIDResult;
-import Request.PersonRequest;
 import Service.PersonService;
-import com.google.gson.*;
+import Request.PersonRequest;
 
-public class OnePersonHandler implements HttpHandler {
+
+
+public class OnePersonHandler extends Handler { // Class Opening
 
     @Override
     public void handle(HttpExchange exchange) throws IOException { // HTTP Method: GET
-        System.out.println("In One Person Handler");
-        boolean success = false;
 
-        try {
-            // Determine the HTTP request type (POST).
+        System.out.println("In One Person Handler");
+
+        try { // Beginning of try
+
+            // Determine the HTTP request type (GET).
             if (exchange.getRequestMethod().toLowerCase().equals("get")) { // expected a get request
 
                 // Get the HTTP request headers
@@ -34,38 +41,39 @@ public class OnePersonHandler implements HttpHandler {
 
                     // Extract the personID from the URL
                     String [] URL = exchange.getRequestURI().toString().split("/");
-                    String personID = URL[2];
+                    String personID = URL[2]; // index 2, 3rd element
 
+                    // Do the Service
                     PersonRequest request = new PersonRequest(authToken,personID);
                     PersonIDResult result = PersonService.getOnePerson(request);
 
-                    // Send HTTP Response to client
-                    if(result.isSuccess()) {
-                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-                    }
+                    // Send response back (including the code)
+                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 
-                    // Serialize
+
+                    // Get response body output stream
                     OutputStream resBody = exchange.getResponseBody();
-                    Gson gson = new Gson();
                     String resData = gson.toJson(result);
                     writeString(resData, resBody);
                     resBody.close();
-
                     success = true;
                 }
             }
 
-            if (!success) {
+            // request method not get
+            else {
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0); // 400 status code
+                exchange.getResponseBody().close(); //not gonna send back any data
+
+            }
+
+            if (!success) { // check for failure
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
                 exchange.getResponseBody().close(); // don't send response
             }
 
-        } catch (DataAccessException e) {
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_SERVER_ERROR, 0);
-            exchange.getResponseBody().close();
-
-            e.printStackTrace();
-        } catch (IOException e) {
+        } // End of try
+        catch (IOException | DataAccessException e) {
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_SERVER_ERROR, 0);
             exchange.getResponseBody().close();
 
@@ -73,9 +81,5 @@ public class OnePersonHandler implements HttpHandler {
         }
     }
 
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        sw.write(str);
-        sw.flush();
-    }
-}
+
+} // Class Closing

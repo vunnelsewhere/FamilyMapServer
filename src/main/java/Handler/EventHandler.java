@@ -1,26 +1,29 @@
 package Handler;
 
+// From Java HTTP Server
+import com.sun.net.httpserver.*;
+
+// From Java serialization/deserialization library
+import com.google.gson.*;
+
+// From other Java Library
 import java.io.*;
 import java.net.*;
 
+// From other packages
 import DataAccess.DataAccessException;
-import Request.PersonRequest;
-import Result.PersonResult;
-import Service.PersonService;
-import com.sun.net.httpserver.*;
-
 import Result.EventResult;
 import Request.EventRequest;
 import Service.EventService;
-import com.google.gson.*;
 
-public class EventHandler implements HttpHandler {
+public class EventHandler extends Handler  { // Class Opening
     @Override
     public void handle(HttpExchange exchange) throws IOException { // // HTTP Method: GET
-        System.out.println("In All Event Handler");
-        boolean success = false;
 
-        try {
+        System.out.println("In All Event Handler");
+
+        try { // Beginning of try
+
             // Determine the HTTP request type (POST).
             if (exchange.getRequestMethod().toLowerCase().equals("get")) { // expected a get request
 
@@ -36,44 +39,38 @@ public class EventHandler implements HttpHandler {
                     EventRequest request = new EventRequest(authToken);
                     EventResult result = EventService.getAllEvent(request);
 
-                    // Send HTTP Response to client
-                    if(result.isSuccess()) {
-                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-                    }
+                    // Send response back (including the code)
+                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 
-                    // Serialize
+
+                    // Get response body output stream
                     OutputStream resBody = exchange.getResponseBody();
-                    Gson gson = new Gson();
                     String resData = gson.toJson(result);
                     writeString(resData, resBody);
                     resBody.close();
-
                     success = true;
                 }
             }
 
-            if (!success) {
+            // request method not get
+            else {
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0); // 400 status code
+                exchange.getResponseBody().close(); //not gonna send back any data
+
+            }
+
+            if (!success) { // check for failure
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
                 exchange.getResponseBody().close(); // don't send response
             }
 
-        } catch (DataAccessException e) {
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_SERVER_ERROR, 0);
-            exchange.getResponseBody().close();
-
-            e.printStackTrace();
-        } catch (IOException e) {
+        } // End of try
+        catch (IOException | DataAccessException e) {
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_SERVER_ERROR, 0);
             exchange.getResponseBody().close();
 
             e.printStackTrace();
         }
-
     }
 
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        sw.write(str);
-        sw.flush();
-    }
-}
+} // Class Closing

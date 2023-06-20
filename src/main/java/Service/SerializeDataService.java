@@ -1,20 +1,26 @@
 package Service;
 
-
+// From Java Serializer/Deserializer
 import com.google.gson.Gson;
 
+// From Java Reader (json files to objects)
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+
+// From java Random (generate random names and locations)
 import java.util.Random;
 
-public class SeedService {
+public class SerializeDataService {
 
+    // Variable Declaration
     private String[] surnames;
-    private String[] fnames;
-    private String[] mnames;
+    private String[] fnames; // female first names
+    private String[] mnames; // male last names
+    private Location[] locations;
 
-    public static class Location {
+    // Location.java
+    public class Location {
         private String country;
         private String city;
         private float latitude;
@@ -52,23 +58,29 @@ public class SeedService {
             this.longitude = longitude;
         }
     }
-    private Location[] locations;
 
-    // classes to hold objects from Json files
-    private class locationData {
+
+    // LocationData.java
+    private class LocationData {
         private Location[] data;
     }
-    private class surnamesData {
-        private String[] data;
-    }
-    private class fnamesData {
-        private String[] data;
-    }
-    private class mnamesData {
+
+    // SNameData.java
+    private class SNameData {
         private String[] data;
     }
 
-    public SeedService() {
+    // FNameData.java
+    private class FNameData {
+        private String[] data;
+    }
+
+    // MNameData.java
+    private class MNameData {
+        private String[] data;
+    }
+
+    public SerializeDataService() {
 
         Gson gson = new Gson();
 
@@ -83,10 +95,10 @@ public class SeedService {
              Reader maleNameReader = new FileReader(maleNamePath);
              Reader locationReader = new FileReader(locationPath)) {
 
-            surnamesData surData = gson.fromJson(lastNameReader, surnamesData.class);
-            fnamesData fData = gson.fromJson(femaleNameReader, fnamesData.class);
-            mnamesData mData = gson.fromJson(maleNameReader, mnamesData.class);
-            locationData locData = gson.fromJson(locationReader, locationData.class);
+            SNameData surData = gson.fromJson(lastNameReader, SNameData.class);
+            FNameData fData = gson.fromJson(femaleNameReader, FNameData.class);
+            MNameData mData = gson.fromJson(maleNameReader, MNameData.class);
+            LocationData locData = gson.fromJson(locationReader, LocationData.class);
 
             this.surnames = surData.data;
             this.fnames = fData.data;

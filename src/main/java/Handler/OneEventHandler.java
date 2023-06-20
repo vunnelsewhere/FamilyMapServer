@@ -1,6 +1,9 @@
 package Handler;
 
 // From Java HTTP Server
+import Request.PersonRequest;
+import Result.PersonIDResult;
+import Service.PersonService;
 import com.sun.net.httpserver.*;
 
 // From Java serialization/deserialization library
@@ -12,16 +15,17 @@ import java.net.*;
 
 // From other packages
 import DataAccess.DataAccessException;
-import Result.PersonResult;
-import Request.PersonRequest;
-import Service.PersonService;
+import Result.EventIDResult;
+import Service.EventService;
+import Request.EventRequest;
 
 
-public class PersonHandler extends Handler { // Class Opening
+public class OneEventHandler extends Handler { // Class Opening
+
     @Override
     public void handle(HttpExchange exchange) throws IOException { // HTTP Method: GET
 
-        System.out.println("In All Person Handler");
+        System.out.println("In One Event Handler");
 
         try { // Beginning of try
 
@@ -37,9 +41,13 @@ public class PersonHandler extends Handler { // Class Opening
                     // Extract the auth token from the "Authorization" header
                     String authToken = reqHeaders.getFirst("Authorization"); // authorization header contains the authtoken
 
-                    // Do the Service (no need to extract personID)
-                    PersonRequest request = new PersonRequest(authToken);
-                    PersonResult result = PersonService.getAllPerson(request);
+                    // Extract the personID from the URL
+                    String [] URL = exchange.getRequestURI().toString().split("/");
+                    String eventID = URL[2]; // index 2, 3rd element
+
+                    // Do the Service
+                    EventRequest request = new EventRequest(authToken,eventID);
+                    EventIDResult result = EventService.getOneEvent(request);
 
                     // Send response back (including the code)
                     exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
@@ -74,6 +82,5 @@ public class PersonHandler extends Handler { // Class Opening
             e.printStackTrace();
         }
     }
-
 
 } // Class Closing

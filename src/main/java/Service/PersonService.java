@@ -1,59 +1,81 @@
 package Service;
 
+// From other package
 import Model.*;
 import DataAccess.*;
 import Request.PersonRequest;
 import Result.PersonIDResult;
 import Result.PersonResult;
 
+//
+import java.sql.Connection;
+
+// From Data Structure
+
 import java.util.*; // use arraylist to store the list of person
 
 /**
  * This service class implements the function of interacting with person data from the database
  */
-public class PersonService {
-    /**
-     * This is an empty default constructor
-     */
+public class PersonService { // Class Opening
+
+
+
+    // Constructor
     public PersonService() {
     }
 
+
+    // Main Method - User Command (personID)
     public static PersonIDResult getOnePerson(PersonRequest r) throws DataAccessException {
         System.out.println("In One Person Service");
-        Database db = new Database();
 
-        PersonIDResult result = null;
+        // Initial Variable Declarations
+        Database db = new Database();
+        PersonIDResult result;
+
         try {
             // Open database connection
             db.openConnection();
 
+            // Pass Connection to the DAOs
+            Connection conn = db.getConnection();
+            PersonDao pDao = new PersonDao(conn);
+            AuthTokenDao aDao = new AuthTokenDao(conn);
+
+            // Get information from requests body
+            String authTokenStr = r.getAuthToken();
+            String personIDStr = r.getPersonID();
+
             // Use DAOs to do requested operation
-            PersonDao pDao = new PersonDao(db.getConnection());
-            AuthTokenDao aDao = new AuthTokenDao(db.getConnection());
+            AuthToken correspondAuthToken = aDao.getAuthToken(authTokenStr);
+            Person correspondPerson = pDao.getPerson(personIDStr);
 
-            // find user associated with the authtoken and personID
-            AuthToken authToken = aDao.getAuthToken(r.getAuthToken());
-            Person person = pDao.getPerson(r.getPersonID());
 
-            if(authToken == null || !person.getAssociatedUsername().equals(authToken.getUsername())) {
-                result = new PersonIDResult("Error: authtoken not found or not associated with given personID",false);
+            // if the authtoken is empty or user info (personID and authtoken) do not match
+            if(correspondAuthToken == null || !correspondPerson.getAssociatedUsername().equals(correspondAuthToken.getUsername())) {
+                result = new PersonIDResult("Error: Authtoken is not provided OR user info incorrect",false);
             }
-            else {
 
+
+            else {
                 // Create person object of user and
-                if(r.getPersonID() == null || r.getPersonID().equals("")) {
+                if(correspondPerson.getPersonID() == null || correspondPerson.getPersonID().equals("")) {
                     result = new PersonIDResult("Error: invaid personID", false);
                 }
                 else {
-                    String associatedUsername = person.getAssociatedUsername();
-                    String firstName = person.getFirstName();
-                    String personID = person.getPersonID();
-                    String lastName = person.getLastName();
-                    String gender = person.getGender();
-                    String fatherID = person.getFatherID();
-                    String motherID = person.getMotherID();
-                    String spouseID = person.getSpouseID();
 
+
+                    String associatedUsername = correspondPerson.getAssociatedUsername();
+                    String firstName = correspondPerson.getFirstName();
+                    String personID = correspondPerson.getPersonID();
+                    String lastName = correspondPerson.getLastName();
+                    String gender = correspondPerson.getGender();
+                    String fatherID = correspondPerson.getFatherID();
+                    String motherID = correspondPerson.getMotherID();
+                    String spouseID = correspondPerson.getSpouseID();
+
+                    // Create SUCCESS Result object
                     result = new PersonIDResult(
                             personID,
                             associatedUsername,
@@ -72,78 +94,88 @@ public class PersonService {
 
             // Close database connection, COMMIT transaction
             db.closeConnection(true);
-            return result;
 
-        }
+        } // End of try
         catch (DataAccessException e) {
 
             e.printStackTrace();
 
             // Close database connection, ROLLBACK transaction
             db.closeConnection(false);
-            result = new PersonIDResult("Error: Internal Server Error",false);
-            return result;
+
+            // Create FAILURE Result object
+            result = new PersonIDResult("Error: Get One Person failed",false);
 
         }
 
-
-    }
-
-
+        // Return Result object
+        return result;
 
 
-    /**
-     * This method is used to return all family members of the current user
-     * @param
-     * @return person result object
-     * @throws DataAccessException
-     */
+    } // End of method 1
+
+
+
+
+    // Main Method
     public static PersonResult getAllPerson(PersonRequest r) throws DataAccessException {
-        System.out.println("In All Person Service");
-        Database db = new Database();
 
-        PersonResult result = null;
+        System.out.println("In All Person Service");
+
+        // Initial Variable Declaration
+        Database db = new Database();
+        PersonResult result;
 
         try {
             // Open database connection
             db.openConnection();
 
+            // Pass Connection to the DAOs
+            Connection conn = db.getConnection();
+            PersonDao pDao = new PersonDao(conn);
+            AuthTokenDao aDao = new AuthTokenDao(conn);
+
+            // Get information from requests body
+            String authTokenStr = r.getAuthToken();
+
             // Use DAOs to do requested operation
-            PersonDao pDao = new PersonDao(db.getConnection());
-            AuthTokenDao aDao = new AuthTokenDao(db.getConnection());
+            AuthToken correspondAuthToken = aDao.getAuthToken(authTokenStr);
 
-            // find user associated with the authtoken
-            String authtokenstring = r.getAuthToken();
-            AuthToken authToken = aDao.getAuthToken(authtokenstring);
-
-            // if user does not exist or authtoken does not exist
-            if(authToken.getUsername()== null || authToken == null) {
+            // if the authtoken is empty or corresponding user does not exist
+            if(correspondAuthToken.getUsername()== null || correspondAuthToken == null) {
                 result = new PersonResult("Error: Invalid auth token",false);
             }
+
+
             // found the user
             else {
-                String username = authToken.getUsername();
+                String username = correspondAuthToken.getUsername();
                 ArrayList<Person> allPerson = pDao.getPersonList(username);
+
+                // Create SUCCESS Result object
                 result = new PersonResult(allPerson,true);
             }
 
             // Close database connection, COMMIT transaction
             db.closeConnection(true);
-            return result;
 
-        }
+        } // End of try
         catch (DataAccessException e) {
 
             e.printStackTrace();
 
             // Close database connection, ROLLBACK transaction
             db.closeConnection(false);
-            result = new PersonResult("Error: Internal Server Error",false);
-            return result;
+
+            // Create FAILURE Result object
+            result = new PersonResult("Error: Get Person List failed",false);
         }
 
-    }
+        // Return Result object
+        return result;
+
+    } // End of method 2
 
 
 
-}
+} // Class Closing
