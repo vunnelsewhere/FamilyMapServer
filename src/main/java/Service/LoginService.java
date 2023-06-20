@@ -1,86 +1,99 @@
 package Service;
 
+// From other package
+import Model.*;
 import DataAccess.*;
 
-import DataAccess.DataAccessException;
-import Model.*;
-
-import Result.LoadResult;
 import Result.LoginResult;
 import Request.LoginRequest;
 
-import java.util.ArrayList;
+// From UUID - generate random authtoken
+import java.sql.Connection;
 import java.util.UUID;
 
 /**
  * This service class implements the function of logining the user in
  */
-public class LoginService {
-    /**
-     * This is an empty default constructor
-     */
+public class LoginService { // Class Opening
+
+    // Constructor
     public LoginService() {
     }
 
-    /**
-     * This method is used to logs the user in
-     * @param request login request data
-     * @return login response object
-     * @throws DataAccessException
-     */
+
+
+    // Main Method
     public LoginResult login(LoginRequest request) throws DataAccessException {
+
+        System.out.println("In login Service");
+
+        // Initial Variable Declarations
         Database db = new Database();
+        LoginResult result;
 
-        LoginResult result = null;
+        // Extract data
+        String username = request.getUsername();
+        String password = request.getPassword();
 
-        try {
-            System.out.println("In Login Service");
+        try { // Beginning of try
+
             // Open database connection
             db.openConnection();
 
-            // Use DAOs to do requested operation
-            UserDao uDao = new UserDao(db.getConnection());
-            AuthTokenDao aDao = new AuthTokenDao(db.getConnection());
+            // Pass Connection to DAOs
+            Connection conn = db.getConnection();
+            UserDao uDao = new UserDao(conn);
+            AuthTokenDao aDao = new AuthTokenDao(conn);
 
-            // Check if the user exist or password is valid
-            User user = uDao.getUser(request.getUsername());
+            // Check if the user exist
+            User user = uDao.getUser(username);
             // User does not exist
             if(user == null) {
                 result = new LoginResult("Error: User does not exist",false);
             }
+
+
             // User exist, check password
             else {
-                if(!user.getPassword().equals(request.getPassword())) { // password does not match
+                if(!user.getPassword().equals(password)) { // password does not match
                     result = new LoginResult("Error: Incorrect Password",false);
                 }
+
+                // User exist + correct password
                 else {
 
-                    // create an auth token for the user
-                    String authtokenstring = UUID.randomUUID().toString();
-                    AuthToken authToken = new AuthToken(authtokenstring,request.getUsername());
+                    // return an auth token
+                    String newToken = UUID.randomUUID().toString();
+                    AuthToken authToken = new AuthToken(newToken,username);
                     aDao.insertAuthToken(authToken); // each new login request must generate and return a new authtoken
 
                     // personID
                     String personID = user.getPersonID();
-                    result = new LoginResult(authtokenstring,request.getUsername(),personID,true);
+
+                    // Create SUCCESS Result object
+                    result = new LoginResult(newToken,username,personID,true);
                 }
 
             }
 
             // Close database connection, COMMIT transaction
             db.closeConnection(true);
-            return result;
 
-        }
+        } // End of try
+
         catch (DataAccessException e) {
             e.printStackTrace();
 
             //Close database connection, ROLLBACK transaction
             db.closeConnection(false);
 
-            // Create and return FAILURE Result object
-            result = new LoginResult("Error: Internal Server Error",false);
-            return result;
+            // Create FAILURE Result object
+            result = new LoginResult("Error: Login failed",false);
         }
+
+        // Return Result object
+        return result;
     }
-}
+
+
+} // Class Closing

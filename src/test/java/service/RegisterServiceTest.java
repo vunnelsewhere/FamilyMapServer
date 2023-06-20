@@ -72,15 +72,15 @@ public class RegisterServiceTest { // Class Opening
         result = service.register(request);
         result2 = service.register(request);
         assertNotNull(result2);
-        assertEquals(result2.getMessage(),"Error: username already exist");
-        assertEquals(result2.isSuccess(),false);
+        assertEquals("Error: username already exist",result2.getMessage());
+        assertEquals(false, result2.isSuccess());
         assertNull(result2.getUsername());
 
         System.out.println("Test 2: invalid input");
         result3 = service.register(badRequest);
         assertNotNull(result3);
-        assertEquals(result3.getMessage(),"Error: Missing fields, try again");
-        assertEquals(result3.isSuccess(),false);
+        assertEquals("Error: Missing fields, try again",result3.getMessage());
+        assertEquals(false, result3.isSuccess());
         assertNull(result3.getUsername());
 
     }

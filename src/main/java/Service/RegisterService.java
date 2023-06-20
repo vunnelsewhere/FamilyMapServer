@@ -25,6 +25,7 @@ public class RegisterService { // Class Opening
 
     // Main Method
     public RegisterResult register(RegisterRequest r) throws DataAccessException{
+
         System.out.println("In register Service");
 
         // Initial Variable Declarations
