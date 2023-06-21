@@ -28,10 +28,10 @@ public class Event {
 
 
     // Constructor
-    public Event(String eventID, String username, String personID, Float latitude, Float longitude,
+    public Event(String eventID, String associatedUsername, String personID, Float latitude, Float longitude,
                  String country, String city, String eventType, Integer year) {
         this.eventID = eventID;
-        this.associatedUsername = username;
+        this.associatedUsername = associatedUsername;
         this.personID = personID;
         this.latitude = latitude;
         this.longitude = longitude;

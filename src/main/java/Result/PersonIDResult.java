@@ -67,7 +67,7 @@ public class PersonIDResult {
      * @param motherID - Person ID of person’s mother
      * @param spouseID - Person ID of person’s spouse
      */
-    public PersonIDResult(String personID,String associatedUsername, String firstName, String lastName, String gender, String fatherID, String motherID, String spouseID, Boolean success) {
+    public PersonIDResult(String associatedUsername,String personID, String firstName, String lastName, String gender, String fatherID, String motherID, String spouseID, Boolean success) {
 
         this.personID = personID;
         this.associatedUsername = associatedUsername;

@@ -46,7 +46,7 @@ public class RegisterServiceTest { // Class Opening
         badRequest = new RegisterRequest(null,null,null,null,null,null);
 
         // Pass Connection
-        Connection conn = db.getConnection();
+        Connection conn = db.getConnection(); // never used
 
         // Clear database as well so any lingering data doesn't affect the tests
         db.clear();

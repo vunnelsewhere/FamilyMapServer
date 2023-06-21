@@ -36,8 +36,8 @@ public class EventHandler extends Handler  { // Class Opening
                     // Extract the auth token from the "Authorization" header
                     String authToken = reqHeaders.getFirst("Authorization"); // authorization header contains the authtoken
 
-                    EventRequest request = new EventRequest(authToken);
-                    EventResult result = EventService.getAllEvent(request);
+                    // Do the Service (no need to extract eventID)
+                    EventResult result = EventService.getAllEvent(authToken);
 
                     // Send response back (including the code)
                     exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

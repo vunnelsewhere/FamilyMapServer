@@ -4,7 +4,6 @@ package Handler;
 import com.sun.net.httpserver.*;
 
 // From Java serialization/deserialization library
-import com.google.gson.*;
 
 // From other Java Library
 import java.io.*;
@@ -13,7 +12,6 @@ import java.net.*;
 // From other packages
 import DataAccess.DataAccessException;
 import Result.PersonResult;
-import Request.PersonRequest;
 import Service.PersonService;
 
 
@@ -38,8 +36,7 @@ public class PersonHandler extends Handler { // Class Opening
                     String authToken = reqHeaders.getFirst("Authorization"); // authorization header contains the authtoken
 
                     // Do the Service (no need to extract personID)
-                    PersonRequest request = new PersonRequest(authToken);
-                    PersonResult result = PersonService.getAllPerson(request);
+                    PersonResult result = PersonService.getAllPerson(authToken);
 
                     // Send response back (including the code)
                     exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
@@ -61,7 +58,7 @@ public class PersonHandler extends Handler { // Class Opening
 
             }
 
-            if (!success) { // check for failure
+            if (!success) { // check for failure ("Authorization" header is absent)
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
                 exchange.getResponseBody().close(); // don't send response
             }

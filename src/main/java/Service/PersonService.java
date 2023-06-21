@@ -3,7 +3,6 @@ package Service;
 // From other package
 import Model.*;
 import DataAccess.*;
-import Request.PersonRequest;
 import Result.PersonIDResult;
 import Result.PersonResult;
 
@@ -27,7 +26,7 @@ public class PersonService { // Class Opening
 
 
     // Main Method - User Command (personID)
-    public static PersonIDResult getOnePerson(PersonRequest r) throws DataAccessException {
+    public static PersonIDResult getOnePerson(String personIDreq, String authTokenreq) throws DataAccessException {
         System.out.println("In One Person Service");
 
         // Initial Variable Declarations
@@ -44,18 +43,24 @@ public class PersonService { // Class Opening
             AuthTokenDao aDao = new AuthTokenDao(conn);
 
             // Get information from requests body
-            String authTokenStr = r.getAuthToken();
-            String personIDStr = r.getPersonID();
+            String authTokenStr = authTokenreq;
+            String personIDStr = personIDreq;
+
 
             // Use DAOs to do requested operation
             AuthToken correspondAuthToken = aDao.getAuthToken(authTokenStr);
             Person correspondPerson = pDao.getPerson(personIDStr);
 
+            if(correspondPerson == null) {
+                result = new PersonIDResult("Error: Person does not exist",false);
+            }
 
             // if the authtoken is empty or user info (personID and authtoken) do not match
-            if(correspondAuthToken == null || !correspondPerson.getAssociatedUsername().equals(correspondAuthToken.getUsername())) {
-                result = new PersonIDResult("Error: Authtoken is not provided OR user info incorrect",false);
+            else if(correspondAuthToken == null || !correspondPerson.getAssociatedUsername().equals(correspondAuthToken.getUsername())) {
+                result = new PersonIDResult("Error: Cannot find authtoken OR user info incorrect",false);
             }
+
+
 
 
             else {
@@ -77,8 +82,8 @@ public class PersonService { // Class Opening
 
                     // Create SUCCESS Result object
                     result = new PersonIDResult(
-                            personID,
                             associatedUsername,
+                            personID,
                             firstName,
                             lastName,
                             gender,
@@ -118,7 +123,7 @@ public class PersonService { // Class Opening
 
 
     // Main Method
-    public static PersonResult getAllPerson(PersonRequest r) throws DataAccessException {
+    public static PersonResult getAllPerson(String authtokenreq) throws DataAccessException {
 
         System.out.println("In All Person Service");
 
@@ -136,13 +141,13 @@ public class PersonService { // Class Opening
             AuthTokenDao aDao = new AuthTokenDao(conn);
 
             // Get information from requests body
-            String authTokenStr = r.getAuthToken();
+            String authTokenStr = authtokenreq;
 
             // Use DAOs to do requested operation
             AuthToken correspondAuthToken = aDao.getAuthToken(authTokenStr);
 
             // if the authtoken is empty or corresponding user does not exist
-            if(correspondAuthToken.getUsername()== null || correspondAuthToken == null) {
+            if(correspondAuthToken == null || correspondAuthToken.getUsername()== null) {
                 result = new PersonResult("Error: Invalid auth token",false);
             }
 

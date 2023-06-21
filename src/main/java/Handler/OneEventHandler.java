@@ -1,9 +1,6 @@
 package Handler;
 
 // From Java HTTP Server
-import Request.PersonRequest;
-import Result.PersonIDResult;
-import Service.PersonService;
 import com.sun.net.httpserver.*;
 
 // From Java serialization/deserialization library
@@ -46,8 +43,7 @@ public class OneEventHandler extends Handler { // Class Opening
                     String eventID = URL[2]; // index 2, 3rd element
 
                     // Do the Service
-                    EventRequest request = new EventRequest(authToken,eventID);
-                    EventIDResult result = EventService.getOneEvent(request);
+                    EventIDResult result = EventService.getOneEvent(authToken,eventID);
 
                     // Send response back (including the code)
                     exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

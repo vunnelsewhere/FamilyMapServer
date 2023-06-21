@@ -4,7 +4,6 @@ package Handler;
 import com.sun.net.httpserver.*;
 
 // From Java serialization/deserialization library
-import com.google.gson.*;
 
 // From other Java Library
 import java.io.*;
@@ -14,8 +13,6 @@ import java.net.*;
 import DataAccess.DataAccessException;
 import Result.PersonIDResult;
 import Service.PersonService;
-import Request.PersonRequest;
-
 
 
 public class OnePersonHandler extends Handler { // Class Opening
@@ -44,8 +41,7 @@ public class OnePersonHandler extends Handler { // Class Opening
                     String personID = URL[2]; // index 2, 3rd element
 
                     // Do the Service
-                    PersonRequest request = new PersonRequest(authToken,personID);
-                    PersonIDResult result = PersonService.getOnePerson(request);
+                    PersonIDResult result = PersonService.getOnePerson(authToken,personID);
 
                     // Send response back (including the code)
                     exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

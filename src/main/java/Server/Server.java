@@ -42,8 +42,8 @@ public class Server {
         server.createContext("/load", new LoadHandler());
         server.createContext("/person", new PersonHandler());
         server.createContext("/person/", new OnePersonHandler());
-       server.createContext("/event", new EventHandler());
-        // server.createContext("/event/" new OneEventHandler());
+        server.createContext("/event", new EventHandler());
+        server.createContext("/event/", new OneEventHandler());
 
 
 

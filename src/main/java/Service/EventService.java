@@ -26,7 +26,7 @@ public class EventService { // Class Opening
 
 
     // Main Method - User Command (eventID)
-    public static EventIDResult getOneEvent (EventRequest r) throws DataAccessException {
+    public static EventIDResult getOneEvent (String eventIDreq, String authTokenreq) throws DataAccessException {
         System.out.println("In One Event Service");
 
         // Initial Variable Declarations
@@ -43,18 +43,24 @@ public class EventService { // Class Opening
             AuthTokenDao aDao = new AuthTokenDao(conn);
 
             // Get information from requests body
-            String authTokenStr = r.getAuthToken();
-            String eventIDStr = r.getEventID();
+            String authTokenStr = authTokenreq;
+            String eventIDStr = eventIDreq;
 
             // Use DAOs to do requested operation
             AuthToken correspondAuthToken = aDao.getAuthToken(authTokenStr);
             Event correspondEvent = eDao.getEvent(eventIDStr);
 
 
-            // if the authtoken is empty or user info (eventID and authtoken) do not match
-            if(correspondAuthToken == null || !correspondEvent.getAssociatedUsername().equals(correspondAuthToken.getUsername())) {
-                result = new EventIDResult("Error: Authtoken is not provided OR user info incorrect",false);
+            if(correspondEvent == null) {
+                result = new EventIDResult("Error: Event does not exist", false);
+
             }
+            // if the authtoken is empty or user info (eventID and authtoken) do not match
+            else if(correspondAuthToken == null || !correspondEvent.getAssociatedUsername().equals(correspondAuthToken.getUsername())) {
+                result = new EventIDResult("Error: Cannot find authtoken OR user info incorrect",false);
+            }
+
+
 
 
             else {
@@ -66,8 +72,8 @@ public class EventService { // Class Opening
 
 
                     String associatedUsername = correspondEvent.getAssociatedUsername();
-                    String personID = correspondEvent.getPersonID();
                     String eventID = correspondEvent.getEventID();
+                    String personID = correspondEvent.getPersonID();
                     Float latitude = correspondEvent.getLatitude();
                     Float longitude = correspondEvent.getLongitude();
                     String country = correspondEvent.getCountry();
@@ -78,15 +84,16 @@ public class EventService { // Class Opening
 
                     // Create SUCCESS Result object
                     result = new EventIDResult(
-                            eventID,
                             associatedUsername,
+                            eventID,
                             personID,
                             latitude,
                             longitude,
                             country,
                             city,
                             eventType,
-                            year
+                            year,
+                            true
                     );
 
                 }
@@ -118,7 +125,7 @@ public class EventService { // Class Opening
 
 
     // Main Method
-    public static EventResult getAllEvent(EventRequest r) throws DataAccessException {
+    public static EventResult getAllEvent(String authtokenreq) throws DataAccessException {
 
         System.out.println("In All Event Service");
 
@@ -136,13 +143,13 @@ public class EventService { // Class Opening
             AuthTokenDao aDao = new AuthTokenDao(conn);
 
             // Get information from requests body
-            String authTokenStr = r.getAuthToken();
+            String authTokenStr = authtokenreq;
 
             // Use DAOs to do requested operation
             AuthToken correspondAuthToken = aDao.getAuthToken(authTokenStr);
 
             // if the authtoken is empty or corresponding user does not exist
-            if(correspondAuthToken.getUsername()== null || correspondAuthToken == null) {
+            if(correspondAuthToken == null || correspondAuthToken.getUsername()== null) {
                 result = new EventResult("Error: Invalid auth token",false);
             }
 
@@ -166,6 +173,8 @@ public class EventService { // Class Opening
 
             // Close database connection, ROLLBACK transaction
             db.closeConnection(false);
+
+            // Create FAILURE Result object
             result = new EventResult("Error: Get Event List failed",false);
         }
 

@@ -74,7 +74,7 @@ public class EventIDResult {
      * @param eventType - Type of Event
      * @param year - Year of event
      */
-    public EventIDResult(String associatedUsername, String eventID, String personID, Float latitude, Float longitude, String country, String city, String eventType, int year) {
+    public EventIDResult(String associatedUsername, String eventID, String personID, Float latitude, Float longitude, String country, String city, String eventType, int year, Boolean success) {
         this.associatedUsername = associatedUsername;
         this.eventID = eventID;
         this.personID = personID;
@@ -84,6 +84,7 @@ public class EventIDResult {
         this.city = city;
         this.eventType = eventType;
         this.year = year;
+        this.success = success;
     }
 
     /**
