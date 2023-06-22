@@ -62,11 +62,14 @@ public class PersonServiceTest { // Class Opening
         person3 = new Person("09kjhs","nothisuser","Aloha","Banana","m","6789","5678","0000");
 
 
+        db.getConnection(); // update: before clearing the database, you need to get connection!!
+        // Clear database as well so any lingering data doesn't affect the tests
+        db.clear();
+        db.closeConnection(true);
+
         // Pass Connection
         Connection conn = db.getConnection();
 
-        // Clear database as well so any lingering data doesn't affect the tests
-        db.clear();
 
         // Add those data to the DAOs
         pDao = new PersonDao(conn);

@@ -50,20 +50,23 @@ public class ClearServiceTest { // Class Opening
                 "Thailand","Bangkok","Birth",2007);
         authtoken = new AuthToken("87juy64h","Venus");
 
-        // Pass Connection
-        Connection conn = db.getConnection(); // update: before clearing the database, you need to get connection!!
 
+        db.getConnection(); // update: before clearing the database, you need to get connection!!
         // Clear database as well so any lingering data doesn't affect the tests
         db.clear();
+        db.closeConnection(true);
+
+
+
 
         // Add those data to the DAOs
-        UserDao uDao = new UserDao(conn);
+        UserDao uDao = new UserDao(db.getConnection());
         uDao.insert(user);
-        PersonDao pDao = new PersonDao(conn);
+        PersonDao pDao = new PersonDao(db.getConnection());
         pDao.insert(person);
-        EventDao eDao = new EventDao(conn);
+        EventDao eDao = new EventDao(db.getConnection());
         eDao.insert(event);
-        AuthTokenDao aDao = new AuthTokenDao(conn);
+        AuthTokenDao aDao = new AuthTokenDao(db.getConnection());
         aDao.insertAuthToken(authtoken);
 
 
@@ -71,6 +74,7 @@ public class ClearServiceTest { // Class Opening
         // changes made during the test setup are persisted in the database
         db.closeConnection(true);
     }
+
 
     @Test
     public void ClearServicePass() throws DataAccessException {

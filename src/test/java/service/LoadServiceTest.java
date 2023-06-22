@@ -78,18 +78,26 @@ public class LoadServiceTest { // Class Opening
         events.add(event2);
         events.add(event3);
 
+        db.openConnection(); // update: before clearing the database, you need to get connection!!
+        // Clear database as well so any lingering data doesn't affect the tests
+        db.clear();
+        db.closeConnection(true);
+
+
+        /*
 
         // Pass Connection
         Connection conn = db.getConnection(); // update: before clearing the database, you need to get connection!!
-
-        // Clear database as well so any lingering data doesn't affect the tests
-        db.clear();
 
 
         db.closeConnection(true);
 
 
+         */
+
+
     }
+
 
     @Test
     public void LoadServicePass() throws DataAccessException {

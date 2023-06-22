@@ -39,7 +39,13 @@ public class LoginHandler extends Handler { // Class Opening
                 LoginResult result = service.login(request);
 
                 // Send response back (including the code)
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                if(!result.isSuccess()) {
+                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
+                }
+                else {
+                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                }
+
 
 
                 // Get response body output stream
@@ -49,6 +55,13 @@ public class LoginHandler extends Handler { // Class Opening
                 resBody.close();
                 success = true;
 
+                System.out.println(result.getMessage());
+
+                if (!success) { // check for failure
+                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
+                    exchange.getResponseBody().close(); // don't send response
+                }
+
             }
 
             // request method not post
@@ -57,10 +70,6 @@ public class LoginHandler extends Handler { // Class Opening
                 exchange.getResponseBody().close(); //not gonna send back any data
             }
 
-            if (!success) { // check for failure
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
-                exchange.getResponseBody().close(); // don't send response
-            }
 
         } // End of try
         catch (IOException | DataAccessException e) {

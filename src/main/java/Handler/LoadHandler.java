@@ -38,7 +38,9 @@ public class LoadHandler extends Handler { // Class Opening
 
 
                 // Send response back (including the code)
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                if(result.isSuccess()) {
+                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                }
 
 
                 // Get response body output stream

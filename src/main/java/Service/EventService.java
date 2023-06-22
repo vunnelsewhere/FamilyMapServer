@@ -3,7 +3,6 @@ package Service;
 // From other package
 import Model.*;
 import DataAccess.*;
-import Request.EventRequest;
 import Result.EventIDResult;
 import Result.EventResult;
 

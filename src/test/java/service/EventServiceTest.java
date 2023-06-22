@@ -61,11 +61,15 @@ public class EventServiceTest { // Class Opening
         event2 = new Event("n2ud84s", "venusccy", "y9d2k1a", 7.8f, 2.5f, "France", "Paris", "art exhibition", 2022);
         event3 = new Event("p5gf29d", "foodfest2023", "h23kd7r", 8.9f, 4.5f, "Italy", "Rome", "food festival", 2023);
 
+
+        db.getConnection(); // update: before clearing the database, you need to get connection!!
+        // Clear database as well so any lingering data doesn't affect the tests
+        db.clear();
+        db.closeConnection(true);
+
         // Pass Connection
         Connection conn = db.getConnection();
 
-        // Clear database as well so any lingering data doesn't affect the tests
-        db.clear();
 
         // Add those data to the DAOS
         eDao = new EventDao(conn);
@@ -81,6 +85,7 @@ public class EventServiceTest { // Class Opening
 
 
     }
+
 
     @Test
     public void EventIDServicePass() throws DataAccessException {

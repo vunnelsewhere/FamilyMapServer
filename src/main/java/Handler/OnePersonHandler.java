@@ -41,10 +41,15 @@ public class OnePersonHandler extends Handler { // Class Opening
                     String personID = URL[2]; // index 2, 3rd element
 
                     // Do the Service
-                    PersonIDResult result = PersonService.getOnePerson(authToken,personID);
+                    PersonIDResult result = PersonService.getOnePerson(personID,authToken); // was filpped
 
                     // Send response back (including the code)
-                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                    if(result.isSuccess()) {
+                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                    }
+                    else {
+                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
+                    }
 
 
                     // Get response body output stream
@@ -53,6 +58,11 @@ public class OnePersonHandler extends Handler { // Class Opening
                     writeString(resData, resBody);
                     resBody.close();
                     success = true;
+
+                    if (!success) { // check for failure
+                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
+                        exchange.getResponseBody().close(); // don't send response
+                    }
                 }
             }
 
@@ -63,10 +73,6 @@ public class OnePersonHandler extends Handler { // Class Opening
 
             }
 
-            if (!success) { // check for failure
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
-                exchange.getResponseBody().close(); // don't send response
-            }
 
         } // End of try
         catch (IOException | DataAccessException e) {

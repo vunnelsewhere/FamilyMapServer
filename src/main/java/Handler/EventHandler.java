@@ -4,7 +4,6 @@ package Handler;
 import com.sun.net.httpserver.*;
 
 // From Java serialization/deserialization library
-import com.google.gson.*;
 
 // From other Java Library
 import java.io.*;
@@ -13,7 +12,6 @@ import java.net.*;
 // From other packages
 import DataAccess.DataAccessException;
 import Result.EventResult;
-import Request.EventRequest;
 import Service.EventService;
 
 public class EventHandler extends Handler  { // Class Opening
@@ -40,7 +38,12 @@ public class EventHandler extends Handler  { // Class Opening
                     EventResult result = EventService.getAllEvent(authToken);
 
                     // Send response back (including the code)
-                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                    if(!result.isSuccess()) {
+                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
+                    }
+                    else {
+                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                    }
 
 
                     // Get response body output stream

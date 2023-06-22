@@ -4,7 +4,6 @@ package Handler;
 import com.sun.net.httpserver.*;
 
 // From Java serialization/deserialization library
-import com.google.gson.*;
 
 // From other Java Library
 import java.io.*;
@@ -14,7 +13,6 @@ import java.net.*;
 import DataAccess.DataAccessException;
 import Result.EventIDResult;
 import Service.EventService;
-import Request.EventRequest;
 
 
 public class OneEventHandler extends Handler { // Class Opening
@@ -43,10 +41,15 @@ public class OneEventHandler extends Handler { // Class Opening
                     String eventID = URL[2]; // index 2, 3rd element
 
                     // Do the Service
-                    EventIDResult result = EventService.getOneEvent(authToken,eventID);
+                    EventIDResult result = EventService.getOneEvent(eventID, authToken); // was flipped
 
                     // Send response back (including the code)
-                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                    if(!result.getSuccess()) {
+                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
+                    }
+                    else if (result.getSuccess()){
+                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                    }
 
 
                     // Get response body output stream
@@ -65,10 +68,6 @@ public class OneEventHandler extends Handler { // Class Opening
 
             }
 
-            if (!success) { // check for failure
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
-                exchange.getResponseBody().close(); // don't send response
-            }
 
         } // End of try
         catch (IOException | DataAccessException e) {

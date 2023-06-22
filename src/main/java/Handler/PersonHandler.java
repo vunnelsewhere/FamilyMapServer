@@ -39,7 +39,12 @@ public class PersonHandler extends Handler { // Class Opening
                     PersonResult result = PersonService.getAllPerson(authToken);
 
                     // Send response back (including the code)
-                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                    if(!result.isSuccess()) {
+                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
+                    }
+                    else {
+                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                    }
 
 
                     // Get response body output stream
@@ -48,6 +53,7 @@ public class PersonHandler extends Handler { // Class Opening
                     writeString(resData, resBody);
                     resBody.close();
                     success = true;
+
                 }
             }
 
@@ -58,10 +64,13 @@ public class PersonHandler extends Handler { // Class Opening
 
             }
 
+            /* this part is actually useless
             if (!success) { // check for failure ("Authorization" header is absent)
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
                 exchange.getResponseBody().close(); // don't send response
             }
+
+             */
 
         } // End of try
         catch (IOException | DataAccessException e) {

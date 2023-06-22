@@ -54,11 +54,16 @@ public class LoginServiceTest { // Class Opening
         user1 = new User("venuschan","ireallydon'tknow","myemail@gmail.com",
                 "Venus","Chan","f","123456");
 
+
+        db.getConnection(); // update: before clearing the database, you need to get connection!!
+        // Clear database as well so any lingering data doesn't affect the tests
+        db.clear();
+        db.closeConnection(true);
+
+
         // Pass Connection
         Connection conn = db.getConnection();
 
-        // Clear database as well so any lingering data doesn't affect the tests
-        db.clear();
 
         // add new user to user table
         uDao = new UserDao(conn);

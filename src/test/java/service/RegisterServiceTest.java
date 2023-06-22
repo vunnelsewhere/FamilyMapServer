@@ -45,13 +45,23 @@ public class RegisterServiceTest { // Class Opening
                 "Venus","Chan","f");
         badRequest = new RegisterRequest(null,null,null,null,null,null);
 
+
+        db.getConnection(); // update: before clearing the database, you need to get connection!!
+        // Clear database as well so any lingering data doesn't affect the tests
+        db.clear();
+        db.closeConnection(true);
+
+        /*
+
         // Pass Connection
         Connection conn = db.getConnection(); // never used
 
-        // Clear database as well so any lingering data doesn't affect the tests
-        db.clear();
+
 
         db.closeConnection(true);
+
+
+         */
 
     }
 
