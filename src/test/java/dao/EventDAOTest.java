@@ -29,6 +29,9 @@ public class EventDAOTest { // Class Opening
     // Variable Declarations
     private Database db;
     private Event bestEvent;
+    private Event event2;
+    private Event event3;
+    private Event event4;
     private EventDao eDao;
     private List<Event> eventList = new ArrayList<>();
 
@@ -50,18 +53,18 @@ public class EventDAOTest { // Class Opening
                 "Biking_Around", 2016);
 
         // create a list of event with random data
-        Event event2 = new Event("Running_456B", "Gale", "Gale456B",
+        event2 = new Event("Running_456B", "Gale", "Gale456B",
                 40.7f, -74.0f, "USA", "New York",
                 "Marathon", 2022);
-        eventList.add(event2);
-        Event event3 = new Event("Concert_789C", "Gale", "Gale789C",
+
+        event3 = new Event("Concert_789C", "Gale", "Gale789C",
                 51.5f, -0.1f, "UK", "London",
                 "Music Festival", 2023);
-        eventList.add(event3);
-        Event event4 = new Event("Conference_246D", "Mike", "Mike246D",
+
+        event4 = new Event("Conference_246D", "Mike", "Mike246D",
                 48.8f, 2.4f, "France", "Paris",
                 "Tech Conference", 2024);
-        eventList.add(event4);
+
 
         // Here, we'll open the connection in preparation for the test case to use it
         Connection conn = db.getConnection();
@@ -161,6 +164,11 @@ public class EventDAOTest { // Class Opening
 
     @Test
     public void insertAllPass() throws DataAccessException {
+        eventList.add(bestEvent);
+        eventList.add(event2);
+        eventList.add(event3);
+        // eventList.add(event4);
+
         eDao.insertEvents(eventList);
         List<Event> compareTest = eDao.getEventList(bestEvent.getAssociatedUsername());
         assertNotNull(compareTest);
@@ -169,12 +177,22 @@ public class EventDAOTest { // Class Opening
 
     @Test
     public void insertAllFail() throws DataAccessException {
+        eventList.add(bestEvent);
+        eventList.add(event2);
+        eventList.add(event3);
+        eventList.add(event4);
+
         eDao.insertEvents(eventList);
         assertThrows(DataAccessException.class, () -> eDao.insertEvents(eventList));
     }
 
     @Test
     public void retrieveAllSuccess () throws DataAccessException {
+        eventList.add(bestEvent);
+        eventList.add(event2);
+        eventList.add(event3);
+        // eventList.add(event4);
+
         eDao.insertEvents(eventList);
         List<Event> compareTest = eDao.getEventList(bestEvent.getAssociatedUsername());
         assertNotNull(compareTest);
@@ -189,6 +207,11 @@ public class EventDAOTest { // Class Opening
 
     @Test
     public void cleanByNamePass() throws DataAccessException {
+        eventList.add(bestEvent);
+        eventList.add(event2);
+        eventList.add(event3);
+        eventList.add(event4);
+
         eDao.insertEvents(eventList);
         eDao.clearAssoEvents("Gale");
         Event event1 = eDao.getEvent(bestEvent.getEventID()); // eventID of Gale

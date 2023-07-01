@@ -27,8 +27,11 @@ public class PersonDAOTest { // Class Opening
     // Variable Declarations
     private Database db;
     private Person bestPerson;
+    private Person person2;
+    private Person person3;
+    private Person person4;
     private PersonDao pDao;
-    private List<Person> personList = new ArrayList<>();
+    private List<Person> personList = new ArrayList<Person>();
 
 
 
@@ -36,32 +39,34 @@ public class PersonDAOTest { // Class Opening
     @BeforeEach
     public void setup() throws DataAccessException {
         db = new Database();
+
         bestPerson = new Person("Biking_123A", "Gale", "Gale123A",
                 "35.9f", "Japan", "F", "Ushiku","Aloha");
 
-
         // Create a list of person with random data
-        Person person2 = new Person("Running_456B", "Gale", "Doe",
+        person2 = new Person("Running_456B", "Gale", "Doe",
                 "28.5f", "USA", "M", "New York", "Hello");
-        personList.add(person2);
 
-        Person person3 = new Person("Concert_789C", "Gale", "Smith",
+
+        person3 = new Person("Concert_789C", "Gale", "Smith",
                 "32.1f", "UK", "F", "London", "Hi there");
-        personList.add(person3);
 
-        Person person4 = new Person("Conference_246D", "Mike", "Johnson",
+
+        person4 = new Person("Conference_246D", "Mike", "Johnson",
                 "40.0f", "France", "M", "Paris", "Bonjour");
-        personList.add(person4);
+
 
         Connection conn = db.getConnection();
         pDao = new PersonDao(conn);
         pDao.clear();
+
 
     }
 
     // Method 2
     @AfterEach
     public void tearDown() {
+
         db.closeConnection(false);
     }
 
@@ -117,20 +122,35 @@ public class PersonDAOTest { // Class Opening
 
     @Test
     public void insertAllPass() throws DataAccessException {
+        personList.add(bestPerson);
+        personList.add(person2);
+        personList.add(person3);
+        // personList.add(person4);
+
         pDao.insertPersons(personList);
         List<Person> compareTest = pDao.getPersonList(bestPerson.getAssociatedUsername());
         assertNotNull(compareTest);
         assertEquals(personList,compareTest);
+
     }
 
     @Test
     public void insertAllFail() throws DataAccessException {
+        personList.add(bestPerson);
+        personList.add(person2);
+        personList.add(person3);
+        personList.add(person4);
+
         pDao.insertPersons(personList);
         assertThrows(DataAccessException.class, () -> pDao.insertPersons(personList));
     }
 
     @Test
     public void retrieveAllPass() throws DataAccessException {
+        personList.add(bestPerson);
+        personList.add(person2);
+        personList.add(person3);
+
         pDao.insertPersons(personList);
         List<Person> compareTest = pDao.getPersonList(bestPerson.getAssociatedUsername());
         assertNotNull(compareTest);
@@ -148,6 +168,11 @@ public class PersonDAOTest { // Class Opening
 
     @Test
     public void cleanByNamePass() throws DataAccessException {
+        personList.add(bestPerson);
+        personList.add(person2);
+        personList.add(person3);
+        personList.add(person4);
+
         pDao.insertPersons(personList);
         pDao.clearAssoPersons("Gale");
         Person person1 = pDao.getPerson(bestPerson.getPersonID()); // personID of Gale
@@ -155,6 +180,7 @@ public class PersonDAOTest { // Class Opening
         Person person2 = pDao.getPerson("Conference_246D"); // Mike is still here!!
         assertNotNull(person2);
     }
+
 
 
 } // Class Closing
