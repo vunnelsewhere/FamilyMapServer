@@ -4,7 +4,6 @@ package service;
 import DataAccess.DataAccessException;
 import DataAccess.Database;
 import Request.LoginRequest;
-import Result.RegisterResult;
 import Request.RegisterRequest;
 import Service.LoginService;
 import Service.RegisterService;
@@ -13,8 +12,6 @@ import Model.*;
 import DataAccess.*;
 
 // From JUnit test
-import org.junit.After;
-import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,6 +70,12 @@ public class LoginServiceTest { // Class Opening
         // Commit change to database
         db.closeConnection(true);
 
+    }
+
+
+    @AfterEach
+    public void tearDown() {
+        db = null;
     }
 
 

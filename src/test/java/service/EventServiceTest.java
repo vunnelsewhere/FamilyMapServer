@@ -6,13 +6,10 @@ import DataAccess.Database;
 
 import Service.EventService;
 import Result.*;
-import Request.*;
 import Model.*;
 import DataAccess.*;
 
 // From JUnit test
-import org.junit.After;
-import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,6 +81,11 @@ public class EventServiceTest { // Class Opening
         db.closeConnection(true);
 
 
+    }
+
+    @AfterEach
+    public void tearDown() {
+        db = null;
     }
 
 

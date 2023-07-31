@@ -5,15 +5,11 @@ import DataAccess.DataAccessException;
 import DataAccess.Database;
 import Service.ClearService;
 import Service.LoadService;
-import Result.ClearResult;
 import Result.LoadResult;
 import Request.LoadRequest;
 import Model.*;
-import DataAccess.*;
 
 // From JUnit test
-import org.junit.After;
-import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 // From library
-import java.sql.Connection;
 
 // From Data Structure
 import java.util.ArrayList;
@@ -96,6 +91,12 @@ public class LoadServiceTest { // Class Opening
          */
 
 
+    }
+
+
+    @AfterEach
+    public void tearDown() {
+        db = null;
     }
 
 

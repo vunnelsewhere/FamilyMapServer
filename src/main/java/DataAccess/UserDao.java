@@ -46,7 +46,7 @@ public class UserDao { // Class Opening
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new DataAccessException("Error encountered while inserting a user into the database");
+            throw new DataAccessException("Error encountered while inserting into the database");
         }
     }
 

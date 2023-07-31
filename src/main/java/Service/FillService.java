@@ -75,17 +75,19 @@ public class FillService { // Class Opening
 
                     // Return message
                     String message = String.format("Successfully added %d persons and %d events to the database.",
-                            tree.getPersonCount(), tree.getEventCount());
+                            tree.getNumPeople(), tree.getNumEvent());
 
 
                     // Close database connection, COMMIT transaction
-                    db.closeConnection(true);
+                    // db.closeConnection(true);
 
                     // Create SUCCESS Result object
                     result = new FillResult(message,true);
 
                 }
             }
+
+            db.closeConnection(true); // oh my gosh this silly problem causes whole day debugging junit test broooooo!!!
 
 
         } // End of try

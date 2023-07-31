@@ -4,7 +4,6 @@ package Handler;
 import com.sun.net.httpserver.*;
 
 // From Java serialization/deserialization library
-import com.google.gson.*;
 
 // From other Java Library
 import java.io.*;

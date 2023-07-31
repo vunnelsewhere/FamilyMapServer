@@ -4,21 +4,15 @@ package service;
 import DataAccess.DataAccessException;
 import DataAccess.Database;
 import Request.RegisterRequest;
-import Service.ClearService;
 import Service.RegisterService;
 import Result.RegisterResult;
-import Model.*;
-import DataAccess.*;
 
 // From JUnit test
-import org.junit.After;
-import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 // From library
-import java.sql.Connection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,6 +58,12 @@ public class RegisterServiceTest { // Class Opening
          */
 
     }
+
+    @AfterEach
+    public void tearDown() {
+        db = null;
+    }
+
 
     @Test
     public void RegisterServicePass() throws DataAccessException {

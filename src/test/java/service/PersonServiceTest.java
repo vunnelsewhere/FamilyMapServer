@@ -11,6 +11,7 @@ import Model.*;
 import DataAccess.*;
 
 // From JUnit test
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -87,6 +88,10 @@ public class PersonServiceTest { // Class Opening
 
     }
 
+    @AfterEach
+    public void tearDown() {
+        db = null;
+    }
 
     @Test
     public void PersonIDServicePass() throws DataAccessException {

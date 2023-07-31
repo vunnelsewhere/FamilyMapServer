@@ -8,131 +8,103 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
-// From java Random (generate random names and locations)
+// From java Random (generate random names and locationList)
 import java.util.Random;
 
 public class SerializeDataService {
 
     // Variable Declaration
-    private String[] surnames;
-    private String[] fnames; // female first names
-    private String[] mnames; // male last names
-    private Location[] locations;
-
-    // Location.java
-    public class Location {
-        private String country;
-        private String city;
-        private float latitude;
-        private float longitude;
-
-        public String getCountry() {
-            return country;
-        }
-
-        public void setCountry(String country) {
-            this.country = country;
-        }
-
-        public String getCity() {
-            return city;
-        }
-
-        public void setCity(String city) {
-            this.city = city;
-        }
-
-        public float getLatitude() {
-            return latitude;
-        }
-
-        public void setLatitude(float latitude) {
-            this.latitude = latitude;
-        }
-
-        public float getLongitude() {
-            return longitude;
-        }
-
-        public void setLongitude(float longitude) {
-            this.longitude = longitude;
-        }
-    }
 
 
-    // LocationData.java
-    private class LocationData {
-        private Location[] data;
-    }
+    private static String[] femaleNameList;
 
-    // SNameData.java
-    private class SNameData {
-        private String[] data;
-    }
+    private static String[] maleNameList;
 
-    // FNameData.java
-    private class FNameData {
-        private String[] data;
-    }
+    private static Location[] locationList;
+    private static String[] surnameList;
 
-    // MNameData.java
-    private class MNameData {
-        private String[] data;
-    }
 
     public SerializeDataService() {
-
         Gson gson = new Gson();
+        loadSurnameList(gson, "json/snames.json");
+        loadFemaleNameList(gson, "json/fnames.json");
+        loadMaleNameList(gson, "json/mnames.json");
+        loadLocationList(gson, "json/locations.json");
+    }
 
-        String lastNamePath = "json/snames.json";
-        String femaleNamePath = "json/fnames.json";
-        String maleNamePath = "json/mnames.json";
-        String locationPath = "json/locations.json";
-
-
-        try (Reader lastNameReader = new FileReader(lastNamePath);
-             Reader femaleNameReader = new FileReader(femaleNamePath);
-             Reader maleNameReader = new FileReader(maleNamePath);
-             Reader locationReader = new FileReader(locationPath)) {
-
-            SNameData surData = gson.fromJson(lastNameReader, SNameData.class);
-            FNameData fData = gson.fromJson(femaleNameReader, FNameData.class);
-            MNameData mData = gson.fromJson(maleNameReader, MNameData.class);
-            LocationData locData = gson.fromJson(locationReader, LocationData.class);
-
-            this.surnames = surData.data;
-            this.fnames = fData.data;
-            this.mnames = mData.data;
-            this.locations = locData.data;
-
+    private void loadSurnameList(Gson gson, String path) {
+        try (Reader reader = new FileReader(path)) {
+            SNameData data = gson.fromJson(reader, SNameData.class);
+            this.surnameList = data.data;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * Get a random name for the person of the given gender.
-     * @param gender: the gender of the person
-     * @return: a random name generated from the JSON data.
-     */
+    private void loadFemaleNameList(Gson gson, String path) {
+        try (Reader reader = new FileReader(path)) {
+            FNameData data = gson.fromJson(reader, FNameData.class);
+            this.femaleNameList = data.data;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadMaleNameList(Gson gson, String path) {
+        try (Reader reader = new FileReader(path)) {
+            MNameData data = gson.fromJson(reader, MNameData.class);
+            this.maleNameList = data.data;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadLocationList(Gson gson, String path) {
+        try (Reader reader = new FileReader(path)) {
+            LocationData data = gson.fromJson(reader, LocationData.class);
+            this.locationList = data.data;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String getRandomName(String gender) {
-
-        Random rand = new Random();
-        String lastName = this.surnames[rand.nextInt(this.surnames.length)];
-
         String firstName;
-        if (gender.equals("f")) {
-            firstName = this.fnames[rand.nextInt(this.fnames.length)];
-        }
-        else {
-            firstName = this.mnames[rand.nextInt(this.mnames.length)];
-        }
-
+        firstName = getFirstName(gender);
+        String lastName;
+        lastName = getLastName();
         return firstName + " " + lastName;
     }
 
-    public Location getRandomLocation() {
-        Random rand = new Random();
-        return this.locations[rand.nextInt(this.locations.length)];
+    private String getFirstName(String gender) {
+        if (gender.equals("m")) {
+            return getRandomElement(this.maleNameList);
+        } else {
+            return getRandomElement(this.femaleNameList);
+        }
     }
+
+    private String getLastName() {
+        return getRandomElement(this.surnameList);
+    }
+
+    private String getRandomElement(String[] array) {
+        Random rand = new Random();
+        return array[rand.nextInt(array.length)];
+    }
+
+    public Location getRandomLocation() {
+        if (this.locationList.length == 0) {
+            throw new IllegalArgumentException("Empty Location List");
+        }
+
+        Random rand = new Random();
+        int index = rand.nextInt(this.locationList.length);
+        Location location = this.locationList[index];
+
+        System.out.println("Generated random location: " + location.getCountry() + ", " + location.getCity());
+
+        return location;
+    }
+
 }

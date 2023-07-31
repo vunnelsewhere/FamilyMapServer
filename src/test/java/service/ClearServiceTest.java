@@ -9,9 +9,6 @@ import Model.*;
 import DataAccess.*;
 
 // From JUnit test
-import org.junit.After;
-import org.junit.Before;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,22 +48,19 @@ public class ClearServiceTest { // Class Opening
         authtoken = new AuthToken("87juy64h","Venus");
 
 
-        db.getConnection(); // update: before clearing the database, you need to get connection!!
+        Connection conn = db.getConnection(); // update: before clearing the database, you need to get connection!!
         // Clear database as well so any lingering data doesn't affect the tests
         db.clear();
-        db.closeConnection(true);
-
-
 
 
         // Add those data to the DAOs
-        UserDao uDao = new UserDao(db.getConnection());
+        UserDao uDao = new UserDao(conn);
         uDao.insert(user);
-        PersonDao pDao = new PersonDao(db.getConnection());
+        PersonDao pDao = new PersonDao(conn);
         pDao.insert(person);
-        EventDao eDao = new EventDao(db.getConnection());
+        EventDao eDao = new EventDao(conn);
         eDao.insert(event);
-        AuthTokenDao aDao = new AuthTokenDao(db.getConnection());
+        AuthTokenDao aDao = new AuthTokenDao(conn);
         aDao.insertAuthToken(authtoken);
 
 
@@ -74,6 +68,7 @@ public class ClearServiceTest { // Class Opening
         // changes made during the test setup are persisted in the database
         db.closeConnection(true);
     }
+
 
 
     @Test

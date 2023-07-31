@@ -65,7 +65,7 @@ public class AuthTokenDao { // Class Opening
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new DataAccessException("Error encountered while finding an authtoken in the database");
+            throw new DataAccessException("Error encountered while searching an authtoken in the database");
         }
     }
 
@@ -78,7 +78,7 @@ public class AuthTokenDao { // Class Opening
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new DataAccessException("Error encountered while clearing the authToken table");
+            throw new DataAccessException("Error encountered while clearing the table");
         }
     }
 

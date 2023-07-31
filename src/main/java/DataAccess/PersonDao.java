@@ -1,7 +1,6 @@
 package DataAccess;
 
 // From other package
-import Model.Event;
 import Model.Person;
 
 // From library
